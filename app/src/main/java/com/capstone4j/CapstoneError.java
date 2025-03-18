@@ -17,7 +17,8 @@ public enum CapstoneError {
 	SKIPDATA(CS_ERR_SKIPDATA()),
 	X86_ATT(CS_ERR_X86_ATT()),
 	X86_INTEL(CS_ERR_X86_INTEL()),
-	X86_MASM(CS_ERR_X86_MASM());
+	X86_MASM(CS_ERR_X86_MASM()),
+    UNKNOWN(-999);
 
     private final int value;
 
@@ -35,6 +36,6 @@ public enum CapstoneError {
                 return error;
             }
         }
-        throw new IllegalArgumentException("Invalid Capstone error value: " + value);
+        return UNKNOWN;
     }
 }

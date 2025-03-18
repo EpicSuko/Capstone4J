@@ -19,6 +19,7 @@ public class CapstoneUtils {
             case X86_ATT -> "X86 AT&T syntax is unsupported";
             case X86_INTEL -> "X86 Intel syntax is unsupported";
             case X86_MASM -> "X86 Masm syntax is unsupported";
+            default -> "Unknown error";
         };
     }
 
