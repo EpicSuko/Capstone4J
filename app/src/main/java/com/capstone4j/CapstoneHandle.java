@@ -176,6 +176,36 @@ public class CapstoneHandle implements AutoCloseable {
     }
 
     /**
+     * Retrieves a human-readable description for a specific Capstone error code.
+     * <p>
+     * This method provides detailed error messages that can help diagnose issues
+     * with the Capstone engine. The messages are obtained directly from the 
+     * native Capstone library.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * CapstoneError err = handle.getErrNo();
+     * if (err != CapstoneError.OK) {
+     *     String errorMessage = handle.getStrError(err);
+     *     System.err.println("Capstone error: " + errorMessage);
+     * }
+     * }</pre>
+     *
+     * @param error the Capstone error code to get a description for
+     * @return a human-readable string describing the error
+     * @throws RuntimeException if the Capstone handle is not initialized
+     * @see CapstoneError
+     * @see #getErrNo()
+     */
+    public String getStrError(CapstoneError error) {
+        if(this.handle == null) {
+            throw new RuntimeException("Capstone handle is not initialized");
+        }
+        MemorySegment errStr = cs_strerror(error.getValue());
+        return errStr.getUtf8String(0);
+    }
+
+    /**
      * Closes this Capstone handle and releases associated resources.
      * <p>
      * This method closes the underlying Capstone engine instance and, if configured to do so,
