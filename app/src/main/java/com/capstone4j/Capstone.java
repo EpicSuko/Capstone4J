@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import static com.capstone4j.internal.capstone_h.*;
 
-import com.capstone4j.internal.capstone_h;
 import com.capstone4j.utils.NativeUtils;
 
 public class Capstone {

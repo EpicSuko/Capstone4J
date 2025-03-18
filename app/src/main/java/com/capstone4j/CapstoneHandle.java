@@ -5,9 +5,6 @@ import static com.capstone4j.internal.capstone_h.*;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
-import com.capstone4j.internal.capstone_h;
-import com.capstone4j.CapstoneError;
-
 public class CapstoneHandle implements AutoCloseable {
 
     private final Arena handleArena;
