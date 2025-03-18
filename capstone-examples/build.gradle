@@ -1,0 +1,25 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    // Depend on the core library projects
+    implementation project(':capstone-core')
+
+    // Use JUnit Jupiter for testing.
+    testImplementation libs.junit.jupiter
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+application {
+    mainClassName = 'com.capstone.examples.SimpleDisassembler'
+}
+
+// Configure source sets to recognize the correct directory structure
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+    }
+} 
