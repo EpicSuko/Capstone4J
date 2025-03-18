@@ -155,6 +155,27 @@ public class CapstoneHandle implements AutoCloseable {
     }
 
     /**
+     * Retrieves the error code from the Capstone engine.
+     * <p>
+     * This method returns the last error encountered by the Capstone engine for this handle.
+     * The error code can be used to diagnose issues during disassembly operations.
+     * <p>
+     * The returned error is an enum value from {@link CapstoneError}, which provides
+     * detailed information about the specific error condition.
+     *
+     * @return the Capstone error code representing the last error
+     * @throws RuntimeException if the Capstone handle is not initialized
+     * @see CapstoneError
+     * @see CapstoneUtils#getErrorMessage(CapstoneError)
+     */
+    public CapstoneError getErrNo() {
+        if(this.handle == null) {
+            throw new RuntimeException("Capstone handle is not initialized");
+        }
+        return CapstoneError.fromValue(cs_errno(handle.address()));
+    }
+
+    /**
      * Closes this Capstone handle and releases associated resources.
      * <p>
      * This method closes the underlying Capstone engine instance and, if configured to do so,
