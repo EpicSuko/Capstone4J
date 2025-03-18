@@ -32,14 +32,16 @@ public class CapstoneHandle implements AutoCloseable {
      *   <li>The memory arena to use for allocating native resources</li>
      *   <li>Whether the arena should be closed when the handle is closed</li>
      *   <li>A custom memory provider for memory allocation operations</li>
+     *   <li>Whether the handle arena should be used by the memory provider</li>
      * </ul>
      * <p>
      * Example usage:
      * <pre>{@code
      * CapstoneHandleOptions options = CapstoneHandleOptions.builder()
-     *     .arena(Arena.ofConfined())
-     *     .closeArena(true)
+     *     .handleArena(Arena.ofConfined())
+     *     .closeHandleArena(true)
      *     .memoryProvider(new DefaultCapstoneMemoryProvider())
+     *     .useHandleArena(true)
      *     .build();
      * 
      * CapstoneHandle handle = new CapstoneHandle(CapstoneArch.X86, CapstoneMode.X86_64, options);

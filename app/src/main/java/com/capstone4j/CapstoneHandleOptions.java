@@ -83,7 +83,7 @@ public class CapstoneHandleOptions {
      * Returns the default options for a Capstone handle.
      * <p>
      * The default options use a shared arena that is closed when the handle is closed,
-     * and a {@link DefaultCapstoneMemoryProvider} that uses the shared arena.
+     * and a {@link DefaultCapstoneMemoryProvider} that uses the same shared arena.
      * 
      * @return the default options
      */
