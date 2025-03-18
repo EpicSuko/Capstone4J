@@ -1,7 +1,6 @@
 package com.capstone4j;
 
 import java.io.IOException;
-import java.lang.foreign.Arena;
 
 import static com.capstone4j.internal.capstone_h.*;
 
@@ -76,11 +75,26 @@ public class Capstone {
     }
 
     /**
-     * Creates a new Capstone handle for disassembling code.
+     * Creates a new Capstone handle for disassembling code with the specified options.
      * 
      * @param arch The architecture to use for disassembly
      * @param mode The mode to use for disassembly
-     * The memory arena is defaulted to Arena.ofShared() and will be closed when the handle is closed.
+     * @param options The options to configure the handle
+     * @return A new Capstone handle
+     * @throws IllegalStateException if the Capstone library is not initialized
+     */
+    public static CapstoneHandle createHandle(CapstoneArch arch, CapstoneMode mode, CapstoneHandleOptions options) {
+        if(!isInitialized()) {
+            throw new IllegalStateException("Capstone is not initialized");
+        }
+        return new CapstoneHandle(arch, mode, options);
+    }
+
+    /**
+     * Creates a new Capstone handle for disassembling code with the default options.
+     * 
+     * @param arch The architecture to use for disassembly
+     * @param mode The mode to use for disassembly
      * @return A new Capstone handle
      * @throws IllegalStateException if the Capstone library is not initialized
      */
@@ -89,38 +103,5 @@ public class Capstone {
             throw new IllegalStateException("Capstone is not initialized");
         }
         return new CapstoneHandle(arch, mode);
-    }
-
-    /**
-     * Creates a new Capstone handle for disassembling code.
-     * 
-     * @param arch The architecture to use for disassembly
-     * @param mode The mode to use for disassembly
-     * @param arena The memory arena to use for the handle. The memory arena will be closed when the handle is closed.
-     * @return A new Capstone handle
-     * @throws IllegalStateException if the Capstone library is not initialized
-     */
-    public static CapstoneHandle createHandle(CapstoneArch arch, CapstoneMode mode, Arena arena) {
-        if(!isInitialized()) {
-            throw new IllegalStateException("Capstone is not initialized");
-        }
-        return new CapstoneHandle(arch, mode, arena);
-    }
-
-    /**
-     * Creates a new Capstone handle for disassembling code.
-     * 
-     * @param arch The architecture to use for disassembly
-     * @param mode The mode to use for disassembly
-     * @param arena The memory arena to use for the handle. The memory arena will be closed when the handle is closed if closeArena is true.
-     * @param closeArena Whether to close the memory arena when the handle is closed
-     * @return A new Capstone handle
-     * @throws IllegalStateException if the Capstone library is not initialized
-     */
-    public static CapstoneHandle createHandle(CapstoneArch arch, CapstoneMode mode, Arena arena, boolean closeArena) {
-        if(!isInitialized()) {
-            throw new IllegalStateException("Capstone is not initialized");
-        }
-        return new CapstoneHandle(arch, mode, arena, closeArena);
     }
 }

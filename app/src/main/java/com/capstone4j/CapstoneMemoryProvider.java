@@ -8,7 +8,7 @@ import java.lang.foreign.MemorySegment;
  * <p>
  * This interface allows providing custom memory management strategies for the Capstone
  * disassembly engine. Implementations of this interface can be passed to
- * {@link CapstoneHandle#setMemoryProvider(CapstoneMemoryProvider)} to override the
+ * {@link CapstoneHandleOptions.Builder#memoryProvider(CapstoneMemoryProvider)} to override the
  * default memory management used by Capstone.
  * <p>
  * The methods in this interface correspond to the standard C memory allocation functions

@@ -10,62 +10,86 @@ import com.capstone4j.CapstoneError;
 
 public class CapstoneHandle implements AutoCloseable {
 
-    private final Arena arena;
+    private final Arena handleArena;
     private MemorySegment handle;
 
     private final CapstoneArch arch;
     private final CapstoneMode mode;
 
-    private final boolean closeArena;
+    private CapstoneMemoryProvider memoryProvider;
+
+    private final boolean closeHandleArena;
 
     /**
-     * Creates a new Capstone handle with the specified architecture, mode, arena, and arena closing behavior.
+     * Creates a new Capstone handle with the specified architecture, mode, and options.
+     * <p>
+     * This is the primary constructor for creating a Capstone handle. It initializes a new handle
+     * for the Capstone disassembly engine with the specified architecture and mode, and applies
+     * the configuration options provided in the {@code options} parameter.
+     * <p>
+     * The options parameter can be used to configure:
+     * <ul>
+     *   <li>The memory arena to use for allocating native resources</li>
+     *   <li>Whether the arena should be closed when the handle is closed</li>
+     *   <li>A custom memory provider for memory allocation operations</li>
+     * </ul>
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * CapstoneHandleOptions options = CapstoneHandleOptions.builder()
+     *     .arena(Arena.ofConfined())
+     *     .closeArena(true)
+     *     .memoryProvider(new DefaultCapstoneMemoryProvider())
+     *     .build();
+     * 
+     * CapstoneHandle handle = new CapstoneHandle(CapstoneArch.X86, CapstoneMode.X86_64, options);
+     * }</pre>
+     * <p>
+     * For default options, use {@link CapstoneHandleOptions#getDefault()}.
      *
-     * @param arch the architecture to use for disassembly
-     * @param mode the mode to use for disassembly
-     * @param arena the memory arena to allocate native resources from
-     * @param closeArena whether to close the arena when this handle is closed
-     * @throws RuntimeException if the Capstone handle could not be created
+     * @param arch the architecture to use for disassembly (e.g., {@link CapstoneArch#X86}, {@link CapstoneArch#ARM})
+     * @param mode the mode to use for disassembly (e.g., {@link CapstoneMode#X86_64}, {@link CapstoneMode#ARM})
+     * @param options the options for configuring the Capstone handle
+     * @throws RuntimeException if the Capstone handle could not be created due to initialization errors
+     * @throws NullPointerException if any of the parameters is null
+     * @see CapstoneHandleOptions
+     * @see CapstoneArch
+     * @see CapstoneMode
      */
-    CapstoneHandle(CapstoneArch arch, CapstoneMode mode, Arena arena, boolean closeArena) {
+    CapstoneHandle(CapstoneArch arch, CapstoneMode mode, CapstoneHandleOptions options) {
         this.arch = arch;
         this.mode = mode;
-        this.closeArena = closeArena;
+        this.handleArena = options.getHandleArena();
+        this.closeHandleArena = options.isCloseHandleArena();   
+        this.memoryProvider = options.getMemoryProvider();
 
-        this.arena = arena;
-        this.handle = arena.allocate(csh.byteSize());
+        this.handle = handleArena.allocate(csh.byteSize());
 
-        CapstoneError err = CapstoneError.fromValue(cs_open(arch.getValue(), mode.getValue(), handle));
+        if(this.memoryProvider != null) {
+            MemorySegment memOpt = new CapstoneMemoryManager(memoryProvider).createMemoryOptions();
+            CapstoneError err = CapstoneError.fromValue(cs_option(0, CapstoneOption.MEM.getValue(), memOpt.address()));
+            if(err != CapstoneError.OK) {
+                throw new RuntimeException("Failed to set Capstone memory option: " + CapstoneUtils.getErrorMessage(err));
+            }
+        }
+
+        CapstoneError err = CapstoneError.fromValue(cs_open(this.arch.getValue(), this.mode.getValue(), handle));
         if(err != CapstoneError.OK) {
             throw new RuntimeException("Failed to create Capstone handle: " + CapstoneUtils.getErrorMessage(err));
         }
     }
 
     /**
-     * Creates a new Capstone handle with the specified architecture, mode, and arena.
-     * <p>
-     * The arena will be closed when this handle is closed.
-     *
-     * @param arch the architecture to use for disassembly
-     * @param mode the mode to use for disassembly
-     * @param arena the memory arena to allocate native resources from
-     * @throws RuntimeException if the Capstone handle could not be created
-     */
-    CapstoneHandle(CapstoneArch arch, CapstoneMode mode, Arena arena) {
-        this(arch, mode, arena, true);
-    }
-
-    /**
      * Creates a new Capstone handle with the specified architecture and mode.
      * <p>
-     * This constructor uses a shared arena that will be closed when this handle is closed.
+     * This constructor uses the default options ({@link CapstoneHandleOptions#getDefault()}).
      *
      * @param arch the architecture to use for disassembly
      * @param mode the mode to use for disassembly
      * @throws RuntimeException if the Capstone handle could not be created
      */
     CapstoneHandle(CapstoneArch arch, CapstoneMode mode) {
-        this(arch, mode, Arena.ofShared());
+        this(arch, mode, CapstoneHandleOptions.getDefault());
     }
     
     /**
@@ -76,7 +100,7 @@ public class CapstoneHandle implements AutoCloseable {
      * them as an array, which will be bitwise OR'ed together.
      * <p>
      * <strong>Note:</strong> For memory-related configurations, do not use this method with
-     * {@link CapstoneOption#MEM}. Instead, use the {@link #setMemoryProvider(CapstoneMemoryProvider)}
+     * {@link CapstoneOption#MEM}. Instead, use the {@link CapstoneHandleOptions.Builder#memoryProvider(CapstoneMemoryProvider)}
      * method which provides a more appropriate interface for configuring custom memory allocation.
      * 
      * @param option the option to set, must not be {@link CapstoneOption#INVALID} or {@link CapstoneOption#MEM}
@@ -94,7 +118,7 @@ public class CapstoneHandle implements AutoCloseable {
         if(option == CapstoneOption.INVALID) {
             throw new IllegalArgumentException("Invalid option");
         } else if(option == CapstoneOption.MEM) {
-            throw new UnsupportedOperationException("User-defined dynamic memory option is not supported please use setMemoryProvider(CapstoneMemoryProvider) instead");
+            throw new UnsupportedOperationException("User-defined dynamic memory option is not supported please use CapstoneHandleOptions.Builder.memoryProvider(CapstoneMemoryProvider) instead");
         }
 
         int flag = 0;
@@ -115,7 +139,7 @@ public class CapstoneHandle implements AutoCloseable {
      * with a single value.
      * <p>
      * <strong>Note:</strong> For memory-related configurations, do not use this method with
-     * {@link CapstoneOption#MEM}. Instead, use the {@link #setMemoryProvider(CapstoneMemoryProvider)}
+     * {@link CapstoneOption#MEM}. Instead, use the {@link CapstoneHandleOptions.Builder#memoryProvider(CapstoneMemoryProvider)}
      * method which provides a more appropriate interface for configuring custom memory allocation.
      *
      * @param option the option to set, must not be {@link CapstoneOption#INVALID} or {@link CapstoneOption#MEM}
@@ -129,20 +153,6 @@ public class CapstoneHandle implements AutoCloseable {
      */
     public void setOption(CapstoneOption option, CapstoneOptionValue value) {
         setOption(option, new CapstoneOptionValue[] { value });
-    }
-
-    /**
-     * Sets a custom memory provider for the Capstone engine.
-     * <p>
-     * This method allows configuring custom memory allocation for the Capstone engine.
-     * However, the implementation is currently pending and will throw an
-     * {@link UnsupportedOperationException} if called.
-     * 
-     * @param provider the memory provider to use for custom memory allocation
-     * @throws UnsupportedOperationException this feature is not yet implemented
-     */
-    public void setMemoryProvider(CapstoneMemoryProvider provider) {
-        throw new UnsupportedOperationException("Setting a custom memory provider is not yet implemented");
     }
 
     /**
@@ -166,9 +176,9 @@ public class CapstoneHandle implements AutoCloseable {
             }
         }
         
-        if(closeArena) {
+        if(closeHandleArena) {
             try {
-                arena.close();
+                handleArena.close();
             } catch(UnsupportedOperationException e) {
                 // we are either an Arena.global() or Arena.ofAuto() and cannot close it
                 this.handle = null;
