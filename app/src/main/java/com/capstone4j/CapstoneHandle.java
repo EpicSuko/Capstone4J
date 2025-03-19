@@ -125,7 +125,7 @@ public class CapstoneHandle implements AutoCloseable {
             flag |= value.getValue();
         }
 
-        CapstoneError err = CapstoneError.fromValue(cs_option(handle.address(), option.getValue(), flag));
+        CapstoneError err = CapstoneError.fromValue(cs_option(this.handle.get(csh, 0), option.getValue(), flag));
         if(err != CapstoneError.OK) {
             throw new RuntimeException("Failed to set Capstone option: " + CapstoneUtils.getErrorMessage(err));
         }
@@ -172,7 +172,7 @@ public class CapstoneHandle implements AutoCloseable {
         if(this.handle == null) {
             throw new RuntimeException("Capstone handle is not initialized");
         }
-        return CapstoneError.fromValue(cs_errno(handle.address()));
+        return CapstoneError.fromValue(cs_errno(this.handle.get(csh, 0)));
     }
 
     /**
