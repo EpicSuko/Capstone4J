@@ -5,3 +5,12 @@
 build
 
 .vscode/
+
+# Ignore all files in the capstone-examples directory
+capstone-examples/bin/*
+
+# Ignore all files in the app directory
+app/bin/*
+
+# Ignore hs_err_pid*.log files
+hs_err_pid*.log
