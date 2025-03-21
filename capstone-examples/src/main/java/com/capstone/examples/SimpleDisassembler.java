@@ -53,6 +53,12 @@ public class SimpleDisassembler {
                             System.out.println("Groups count: " + instruction.getDetails().getGroupsCount());
                             System.out.println("Groups: " + Arrays.toString(instruction.getDetails().getGroups()));
                             System.out.println("Writeback: " + instruction.getDetails().isWriteback());
+                            for(int regId : instruction.getDetails().getRegsRead()) {
+                                System.out.println("Reg read: " + handle.getRegName(regId));
+                            }
+                            for(int regId : instruction.getDetails().getRegsWrite()) {
+                                System.out.println("Reg write: " + handle.getRegName(regId));
+                            }
                         }
                         offset += instruction.getSize();
                         runtimeAddress += instruction.getSize();
