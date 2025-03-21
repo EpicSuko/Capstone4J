@@ -199,4 +199,106 @@ public class CapstoneInstruction {
     public CapstoneInstructionDetails getDetails() {
         return this.details;
     }
+
+    /**
+     * Checks if this instruction belongs to a specific instruction group.
+     * <p>
+     * Instruction groups are categories that classify instructions based on their functionality 
+     * or behavior (e.g., jump instructions, call instructions, etc.). This method provides
+     * a convenient way to check if an instruction belongs to a particular group without having
+     * to manually iterate through the groups array from the instruction details.
+     * <p>
+     * This is particularly useful for filtering instructions based on their characteristics
+     * during code analysis or when implementing instruction set simulators, emulators, or
+     * static analysis tools.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // Disassemble an instruction
+     * CapstoneInstruction instruction = handle.disassembleInstruction(code, address);
+     * 
+     * // Check if this is a jump instruction
+     * if (instruction.isInsnGroup(CapstoneGroup.JUMP)) {
+     *     System.out.println("This is a jump instruction");
+     * }
+     * 
+     * // Check if this is a call instruction
+     * if (instruction.isInsnGroup(CapstoneGroup.CALL)) {
+     *     System.out.println("This is a call instruction");
+     * }
+     * }</pre>
+     * <p>
+     * Note that this method requires instruction details to be available, which means
+     * the {@link CapstoneOption#DETAIL} option must have been enabled when creating the
+     * Capstone handle.
+     *
+     * @param csGroup the instruction group to check for, one of the predefined groups in {@link CapstoneGroup}
+     * @return {@code true} if the instruction belongs to the specified group, {@code false} otherwise
+     *         or if instruction details are not available
+     * @see CapstoneGroup
+     * @see CapstoneInstructionDetails#getGroups()
+     * @see CapstoneHandle#getGroupName(int)
+     */
+    public boolean isInsnGroup(CapstoneGroup csGroup) {
+        if(this.details == null) {
+            return false;
+        }
+        for(int group : this.details.getGroups()) {
+            if(group == csGroup.getValue()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if this instruction belongs to a specific instruction group identified by its numeric ID.
+     * <p>
+     * This is an alternative to {@link #isInsnGroup(CapstoneGroup)} that accepts a raw group ID
+     * directly instead of a {@link CapstoneGroup} enum value. It checks if the instruction belongs
+     * to the group by comparing the ID directly against the group IDs in the instruction details.
+     * <p>
+     * This method is useful when:
+     * <ul>
+     *   <li>Working with architecture-specific group IDs that may not be defined in the {@link CapstoneGroup} enum</li>
+     *   <li>Dealing with raw group IDs from external sources or databases</li>
+     *   <li>Processing groups programmatically where group IDs are determined at runtime</li>
+     * </ul>
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // Disassemble an instruction
+     * CapstoneInstruction instruction = handle.disassembleInstruction(code, address);
+     * 
+     * // Check if this is a jump instruction using raw group ID
+     * if (instruction.isInsnGroup(1)) {  // Assuming 1 is the ID for jump instructions
+     *     System.out.println("This is a jump instruction");
+     * }
+     * }</pre>
+     * <p>
+     * When possible, it's generally recommended to use the {@link #isInsnGroup(CapstoneGroup)}
+     * method with the enum constants for better code readability and type safety.
+     * <p>
+     * Note that this method requires instruction details to be available, which means
+     * the {@link CapstoneOption#DETAIL} option must have been enabled when creating the
+     * Capstone handle.
+     *
+     * @param groupId the numeric identifier of the instruction group to check for
+     * @return {@code true} if the instruction belongs to the specified group, {@code false} otherwise
+     *         or if instruction details are not available
+     * @see CapstoneGroup
+     * @see CapstoneInstructionDetails#getGroups()
+     * @see CapstoneHandle#getGroupName(int)
+     */
+    public boolean isInsnGroup(int groupId) {
+        if(this.details == null) {
+            return false;
+        }
+        for(int group : this.details.getGroups()) {
+            if(group == groupId) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
