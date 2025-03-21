@@ -349,6 +349,57 @@ public class CapstoneInstruction {
         }
         return false;
     }
-    
-    
+
+    /**
+     * Checks if this instruction writes to a specific register.
+     * <p>
+     * This method examines the instruction details to determine if the instruction writes
+     * to (modifies) the register identified by the provided register ID. Instructions often
+     * write to registers to store results of their operations or to update processor state.
+     * <p>
+     * This method provides a convenient way to check for specific register modification without
+     * having to manually iterate through the registers written array from the instruction details.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // Disassemble an instruction
+     * CapstoneInstruction instruction = handle.disassembleInstruction(code, address);
+     * 
+     * // Check if this instruction writes to EAX register (example with hypothetical ID)
+     * if (instruction.isRegWrite(X86_REG_EAX)) {
+     *     System.out.println("This instruction modifies EAX");
+     * }
+     * }</pre>
+     * <p>
+     * This method is particularly useful for:
+     * <ul>
+     *   <li>Tracking register modifications through a sequence of instructions</li>
+     *   <li>Identifying register dependencies in code analysis</li>
+     *   <li>Determining where values in registers are defined or redefined</li>
+     *   <li>Implementing liveness analysis in compiler optimizations</li>
+     * </ul>
+     * <p>
+     * Note that this method requires instruction details to be available, which means
+     * the {@link CapstoneOption#DETAIL} option must have been enabled when creating the
+     * Capstone handle.
+     *
+     * @param regId the numeric identifier of the register to check for
+     * @return {@code true} if the instruction writes to the specified register, {@code false} otherwise
+     *         or if instruction details are not available
+     * @see CapstoneInstructionDetails#getRegsWrite()
+     * @see CapstoneInstructionDetails#getRegsWriteCount()
+     * @see CapstoneHandle#getRegName(int)
+     * @see #isRegRead(int)
+     */
+    public boolean isRegWrite(int regId) {
+        if(this.details == null) {
+            return false;
+        }
+        for(int reg : this.details.getRegsWrite()) {
+            if(reg == regId) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
