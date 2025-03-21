@@ -4,6 +4,10 @@ import static com.capstone4j.internal.capstone_h.*;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
+import java.lang.foreign.ValueLayout;
+
+// TODO: Work on vsnprintf implementation
+// TODO: (Optional) Create a new CapstoneMemoryProvider that maps the memory segment address to a Arena so that we can close the arena when the memory is freed instead of waiting for the Arena to be closed
 
 public class CapstoneHandle implements AutoCloseable {
 
@@ -16,6 +20,8 @@ public class CapstoneHandle implements AutoCloseable {
     private CapstoneMemoryProvider memoryProvider;
 
     private final boolean closeHandleArena;
+
+    private boolean parseDetails = false;
 
     /**
      * Creates a new Capstone handle with the specified architecture, mode, and options.
@@ -125,6 +131,14 @@ public class CapstoneHandle implements AutoCloseable {
             flag |= value.getValue();
         }
 
+        if(option == CapstoneOption.DETAIL) {
+            if((flag & CapstoneOptionValue.ON.getValue()) > 0) {
+                this.parseDetails = true;
+            } else if((flag & CapstoneOptionValue.OFF.getValue()) > 0) {
+                this.parseDetails = false;
+            }
+        }
+
         CapstoneError err = CapstoneError.fromValue(cs_option(this.handle.get(csh, 0), option.getValue(), flag));
         if(err != CapstoneError.OK) {
             throw new RuntimeException("Failed to set Capstone option: " + CapstoneUtils.getErrorMessage(err));
@@ -203,6 +217,72 @@ public class CapstoneHandle implements AutoCloseable {
         }
         MemorySegment errStr = cs_strerror(error.getValue());
         return errStr.getUtf8String(0);
+    }
+
+    /**
+     * Disassembles a single instruction from the provided byte array.
+     * <p>
+     * This method takes a byte array containing machine code and attempts to disassemble
+     * the first instruction at the specified virtual address. It uses Capstone's native
+     * disassembly functionality to analyze the code and create a Java representation of
+     * the instruction.
+     * <p>
+     * The method allocates temporary memory for the disassembly process and ensures proper
+     * cleanup, regardless of whether the disassembly succeeds or fails.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * byte[] machineCode = new byte[] { (byte)0x55, (byte)0x48, (byte)0x89, (byte)0xe5 }; // x86 "push rbp; mov rbp, rsp"
+     * long virtualAddress = 0x1000;
+     * CapstoneInstruction instruction = handle.disassembleInstruction(machineCode, virtualAddress);
+     * if (instruction != null) {
+     *     System.out.println(instruction.getMnemonic() + " " + instruction.getOpStr());
+     * }
+     * }</pre>
+     *
+     * @param code the byte array containing the machine code to disassemble
+     * @param address the virtual address where the code is located (used for instruction addressing)
+     * @return a {@link CapstoneInstruction} object representing the disassembled instruction,
+     *         or {@code null} if disassembly failed
+     * @throws RuntimeException if the Capstone handle is not initialized or if an error occurs during disassembly
+     * @see CapstoneInstruction
+     * @see CapstoneInstructionFactory
+     */
+    public CapstoneInstruction disassembleInstruction(byte[] code, long address) {
+        if(this.handle == null) {
+            throw new RuntimeException("Capstone handle is not initialized");
+        }
+        try(Arena arena = Arena.ofConfined()) {
+            MemorySegment codeRef = arena.allocate(ValueLayout.ADDRESS);
+            MemorySegment codeSegment = arena.allocateArray(ValueLayout.JAVA_BYTE, code);
+            codeRef.set(ValueLayout.ADDRESS, 0, codeSegment);
+                
+            MemorySegment sizeRef = arena.allocate(ValueLayout.JAVA_LONG, code.length);
+
+            MemorySegment addressRef = arena.allocate(ValueLayout.JAVA_LONG, address);
+            
+            MemorySegment insn = cs_malloc(this.handle.get(csh, 0));
+
+            // Call the native function
+            boolean result = cs_disasm_iter(
+                this.handle.get(csh, 0),
+                codeRef,
+                sizeRef,
+                addressRef,
+                insn
+            );
+
+            CapstoneInstruction instruction = null;
+
+            if(result) {
+                instruction = CapstoneInstructionFactory.createFromMemorySegment(insn, this.arch, this.parseDetails);
+            }
+            
+            cs_free(insn, 1);
+            return instruction;
+        } catch(Exception e) {
+            throw new RuntimeException("Failed to disassemble code: " + e.getMessage(), e);
+        }
     }
 
     /**
