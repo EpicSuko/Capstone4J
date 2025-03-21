@@ -286,6 +286,46 @@ public class CapstoneHandle implements AutoCloseable {
     }
 
     /**
+     * Retrieves the name of a register based on its identifier.
+     * <p>
+     * This method returns the human-readable name of a register in the current architecture,
+     * based on its numeric identifier. The register identifiers are architecture-specific
+     * and are defined by the Capstone engine.
+     * <p>
+     * This is particularly useful when working with instruction details, where registers
+     * are represented by their numeric IDs. For example, when examining which registers are
+     * read or written by an instruction.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // Get instruction details
+     * CapstoneInstruction instruction = handle.disassembleInstruction(code, address);
+     * CapstoneInstructionDetails details = instruction.getDetails();
+     * 
+     * // Print names of registers read by this instruction
+     * for (int regId : details.getRegsRead()) {
+     *     System.out.println("Register read: " + handle.getRegName(regId));
+     * }
+     * }</pre>
+     *
+     * @param regId the architecture-specific register identifier
+     * @return the human-readable name of the register
+     * @throws RuntimeException if the Capstone handle is not initialized or if the register name could not be retrieved
+     * @see CapstoneInstructionDetails#getRegsRead()
+     * @see CapstoneInstructionDetails#getRegsWrite()
+     */
+    public String getRegName(int regId) {
+        if(this.handle == null) {
+            throw new RuntimeException("Capstone handle is not initialized");
+        }
+        MemorySegment regName = cs_reg_name(this.handle.get(csh, 0), regId);
+        if(regName == null || regName.byteSize() == 0 || regName == MemorySegment.NULL) {
+            throw new RuntimeException("Failed to get register name for id: " + regId);
+        }
+        return regName.getUtf8String(0);
+    }
+
+    /**
      * Closes this Capstone handle and releases associated resources.
      * <p>
      * This method closes the underlying Capstone engine instance and, if configured to do so,
