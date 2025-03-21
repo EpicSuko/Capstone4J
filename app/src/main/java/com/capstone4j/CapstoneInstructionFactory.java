@@ -60,7 +60,7 @@ class CapstoneInstructionFactory {
         int groupsCount = cs_detail.groups_count(segment);
         int[] groups = new int[groupsCount];
         for (int i = 0; i < groupsCount; i++) {
-            groups[i] = groupsSegment.get(C_CHAR, i * C_CHAR.byteSize());
+            groups[i] = groupsSegment.get(C_CHAR, i * C_CHAR.byteSize()) & 0xFF;
         }
 
         boolean writeback = cs_detail.writeback(segment);
