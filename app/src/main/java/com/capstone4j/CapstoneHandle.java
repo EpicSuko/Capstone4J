@@ -363,6 +363,47 @@ public class CapstoneHandle implements AutoCloseable {
     }
 
     /**
+     * Retrieves the name of an instruction group based on its identifier.
+     * <p>
+     * This method returns the human-readable name of an instruction group in the current architecture,
+     * based on its numeric identifier. Instruction groups are categories that classify instructions
+     * by their functionality or behavior (e.g., jump instructions, arithmetic operations, etc.).
+     * The group identifiers are architecture-specific and are defined by the Capstone engine.
+     * <p>
+     * This is particularly useful when working with instruction details, where instruction groups
+     * are represented by their numeric IDs. Understanding which groups an instruction belongs to
+     * can help with code analysis, optimization, or security assessment.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // Get instruction details
+     * CapstoneInstruction instruction = handle.disassembleInstruction(code, address);
+     * CapstoneInstructionDetails details = instruction.getDetails();
+     * 
+     * // Print all groups this instruction belongs to
+     * for (int groupId : details.getGroups()) {
+     *     System.out.println("Group: " + handle.getGroupName(groupId));
+     * }
+     * }</pre>
+     *
+     * @param groupId the architecture-specific group identifier
+     * @return the human-readable name of the instruction group
+     * @throws RuntimeException if the Capstone handle is not initialized or if the group name could not be retrieved
+     * @see CapstoneInstructionDetails#getGroups()
+     * @see CapstoneInstructionDetails#getGroupsCount()
+     */
+    public String getGroupName(int groupId) {
+        if(this.handle == null) {
+            throw new RuntimeException("Capstone handle is not initialized");
+        }
+        MemorySegment groupName = cs_group_name(this.handle.get(csh, 0), groupId);
+        if(groupName == null || groupName.byteSize() == 0 || groupName == MemorySegment.NULL) {
+            throw new RuntimeException("Failed to get group name for id: " + groupId);
+        }
+        return groupName.getUtf8String(0);
+    }
+
+    /**
      * Closes this Capstone handle and releases associated resources.
      * <p>
      * This method closes the underlying Capstone engine instance and, if configured to do so,
