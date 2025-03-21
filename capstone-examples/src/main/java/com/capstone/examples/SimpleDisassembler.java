@@ -42,7 +42,8 @@ public class SimpleDisassembler {
                     final int length = data.length;
 
                     while(offset < length) {
-                        byte[] subData = Arrays.copyOfRange(data, offset, Math.min(15, offset + 15));
+                        int maxBytesToRead = Math.min(15, length - offset);
+                        byte[] subData = Arrays.copyOfRange(data, offset, offset + maxBytesToRead);
                         CapstoneInstruction instruction = handle.disassembleInstruction(subData, runtimeAddress);
                         System.out.printf("%016X  %s %s\n", instruction.getAddress(), instruction.getMnemonic(), instruction.getOpStr());
                         if(instruction.getDetails() != null) {
@@ -60,6 +61,9 @@ public class SimpleDisassembler {
                                 System.out.println("Reg write: " + handle.getRegName(regId));
                             }
                             System.out.println("Instruction name: " + handle.getInsnName(instruction.getId()));
+                            for(int groupId : instruction.getDetails().getGroups()) {
+                                System.out.println("Group: " + handle.getGroupName(groupId));
+                            }
                         }
                         offset += instruction.getSize();
                         runtimeAddress += instruction.getSize();
