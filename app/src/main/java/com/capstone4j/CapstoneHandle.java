@@ -326,6 +326,43 @@ public class CapstoneHandle implements AutoCloseable {
     }
 
     /**
+     * Retrieves the mnemonic name of an instruction based on its identifier.
+     * <p>
+     * This method returns the standardized mnemonic name of an instruction in the current architecture,
+     * based on its numeric identifier. The instruction identifiers are architecture-specific
+     * and are defined by the Capstone engine.
+     * <p>
+     * This is useful for obtaining consistent instruction names, especially when working with
+     * raw instruction IDs obtained from {@link CapstoneInstruction#getId()}. The returned
+     * name can be used for instruction classification, analysis, or display purposes.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // Disassemble an instruction
+     * CapstoneInstruction instruction = handle.disassembleInstruction(code, address);
+     * 
+     * // Get the standardized name based on its ID
+     * String insnName = handle.getInsnName(instruction.getId());
+     * System.out.println("Instruction name: " + insnName);
+     * }</pre>
+     *
+     * @param insnId the architecture-specific instruction identifier
+     * @return the standardized mnemonic name of the instruction
+     * @throws RuntimeException if the Capstone handle is not initialized or if the instruction name could not be retrieved
+     * @see CapstoneInstruction#getId()
+     */
+    public String getInsnName(int insnId) {
+        if(this.handle == null) {
+            throw new RuntimeException("Capstone handle is not initialized");
+        }
+        MemorySegment insnName = cs_insn_name(this.handle.get(csh, 0), insnId);
+        if(insnName == null || insnName.byteSize() == 0 || insnName == MemorySegment.NULL) {
+            throw new RuntimeException("Failed to get instruction name for id: " + insnId);
+        }
+        return insnName.getUtf8String(0);
+    }
+
+    /**
      * Closes this Capstone handle and releases associated resources.
      * <p>
      * This method closes the underlying Capstone engine instance and, if configured to do so,
