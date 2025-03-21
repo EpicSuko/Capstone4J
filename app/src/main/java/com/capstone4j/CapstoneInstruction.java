@@ -301,4 +301,54 @@ public class CapstoneInstruction {
         }
         return false;
     }
+
+    /**
+     * Checks if this instruction reads from a specific register.
+     * <p>
+     * This method examines the instruction details to determine if the instruction reads
+     * from the register identified by the provided register ID. Instructions often read from
+     * registers to obtain operands for their operations.
+     * <p>
+     * This method provides a convenient way to check for specific register usage without
+     * having to manually iterate through the registers read array from the instruction details.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // Disassemble an instruction
+     * CapstoneInstruction instruction = handle.disassembleInstruction(code, address);
+     * 
+     * // Check if this instruction reads from EAX register (example with hypothetical ID)
+     * if (instruction.isRegRead(X86_REG_EAX)) {
+     *     System.out.println("This instruction reads from EAX");
+     * }
+     * }</pre>
+     * <p>
+     * This method is particularly useful when analyzing data flow in a program, tracking
+     * register usage across multiple instructions, or when implementing register allocation
+     * strategies in a code generation context.
+     * <p>
+     * Note that this method requires instruction details to be available, which means
+     * the {@link CapstoneOption#DETAIL} option must have been enabled when creating the
+     * Capstone handle.
+     *
+     * @param regId the numeric identifier of the register to check for
+     * @return {@code true} if the instruction reads from the specified register, {@code false} otherwise
+     *         or if instruction details are not available
+     * @see CapstoneInstructionDetails#getRegsRead()
+     * @see CapstoneInstructionDetails#getRegsReadCount()
+     * @see CapstoneHandle#getRegName(int)
+     */
+    public boolean isRegRead(int regId) {
+        if(this.details == null) {
+            return false;
+        }
+        for(int reg : this.details.getRegsRead()) {
+            if(reg == regId) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
 }
