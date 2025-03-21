@@ -59,6 +59,7 @@ public class SimpleDisassembler {
                             for(int regId : instruction.getDetails().getRegsWrite()) {
                                 System.out.println("Reg write: " + handle.getRegName(regId));
                             }
+                            System.out.println("Instruction name: " + handle.getInsnName(instruction.getId()));
                         }
                         offset += instruction.getSize();
                         runtimeAddress += instruction.getSize();
