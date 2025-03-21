@@ -45,6 +45,7 @@ public class CapstoneInstruction {
     private final boolean isAlias;
     private final boolean usesAliasDetails;
     private final CapstoneInstructionDetails details;
+    private final CapstoneArch arch;
 
     /**
      * Constructs a new CapstoneInstruction with the specified properties.
@@ -63,7 +64,7 @@ public class CapstoneInstruction {
      * @param usesAliasDetails whether alias details should be used for this instruction
      * @param details detailed information about the instruction, or null if not available
      */
-    CapstoneInstruction(int id, long aliasId, long address, int size, byte[] bytes, String mnemonic, String opStr, boolean isAlias, boolean usesAliasDetails, CapstoneInstructionDetails details) {
+    CapstoneInstruction(int id, long aliasId, long address, int size, byte[] bytes, String mnemonic, String opStr, boolean isAlias, boolean usesAliasDetails, CapstoneInstructionDetails details, CapstoneArch arch) {
         this.id = id;
         this.aliasId = aliasId;
         this.address = address;
@@ -74,6 +75,7 @@ public class CapstoneInstruction {
         this.isAlias = isAlias;
         this.usesAliasDetails = usesAliasDetails;
         this.details = details;
+        this.arch = arch;
     }
 
     /**
@@ -198,6 +200,43 @@ public class CapstoneInstruction {
      */
     public CapstoneInstructionDetails getDetails() {
         return this.details;
+    }
+
+    /**
+     * Returns the architecture for which this instruction was disassembled.
+     * <p>
+     * This method provides access to the architecture information associated with
+     * this instruction. The architecture determines the instruction set, register
+     * names, and various other processor-specific details that affect how the
+     * instruction should be interpreted.
+     * <p>
+     * This information is particularly useful when working with code that might
+     * contain instructions from different architectures, or when implementing
+     * architecture-specific handling logic.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // Disassemble an instruction
+     * CapstoneInstruction instruction = handle.disassembleInstruction(code, address);
+     * 
+     * // Perform architecture-specific processing
+     * switch (instruction.getArch()) {
+     *     case X86:
+     *         processX86Instruction(instruction);
+     *         break;
+     *     case ARM:
+     *         processArmInstruction(instruction);
+     *         break;
+     *     // Handle other architectures...
+     * }
+     * }</pre>
+     *
+     * @return the architecture for which this instruction was disassembled
+     * @see CapstoneArch
+     * @see CapstoneHandle#disassembleInstruction(byte[], long)
+     */
+    public CapstoneArch getArch() {
+        return this.arch;
     }
 
     /**

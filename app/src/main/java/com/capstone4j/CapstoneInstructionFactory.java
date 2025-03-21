@@ -36,7 +36,8 @@ class CapstoneInstructionFactory {
             cs_insn.op_str(segment).getUtf8String(0), 
             cs_insn.is_alias(segment), 
             cs_insn.usesAliasDetails(segment),
-            details
+            details,
+            arch
         );
     }
 
