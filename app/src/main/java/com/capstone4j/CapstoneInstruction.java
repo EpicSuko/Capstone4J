@@ -35,7 +35,7 @@ package com.capstone4j;
  */
 public class CapstoneInstruction {
 
-    private final long id;
+    private final int id;
     private final long aliasId;
     private final long address;
     private final int size;
@@ -63,7 +63,7 @@ public class CapstoneInstruction {
      * @param usesAliasDetails whether alias details should be used for this instruction
      * @param details detailed information about the instruction, or null if not available
      */
-    CapstoneInstruction(long id, long aliasId, long address, int size, byte[] bytes, String mnemonic, String opStr, boolean isAlias, boolean usesAliasDetails, CapstoneInstructionDetails details) {
+    CapstoneInstruction(int id, long aliasId, long address, int size, byte[] bytes, String mnemonic, String opStr, boolean isAlias, boolean usesAliasDetails, CapstoneInstructionDetails details) {
         this.id = id;
         this.aliasId = aliasId;
         this.address = address;
@@ -83,7 +83,7 @@ public class CapstoneInstruction {
      *
      * @return the unique identifier of this instruction
      */
-    public long getId() {
+    public int getId() {
         return this.id;
     }
 
