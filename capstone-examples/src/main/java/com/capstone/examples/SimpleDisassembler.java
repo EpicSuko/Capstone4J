@@ -10,6 +10,7 @@ import com.capstone4j.CapstoneInstruction;
 import com.capstone4j.CapstoneMode;
 import com.capstone4j.CapstoneOption;
 import com.capstone4j.CapstoneOptionValue;
+import com.capstone4j.CapstoneX86Details;
 import com.capstone4j.CapstoneHandle;
 
 public class SimpleDisassembler {
@@ -44,8 +45,8 @@ public class SimpleDisassembler {
                     while(offset < length) {
                         int maxBytesToRead = Math.min(15, length - offset);
                         byte[] subData = Arrays.copyOfRange(data, offset, offset + maxBytesToRead);
-                        CapstoneInstruction instruction = handle.disassembleInstruction(subData, runtimeAddress);
-                        System.out.printf("%016X  %s %s\n", instruction.getAddress(), instruction.getMnemonic(), instruction.getOpStr());
+                        CapstoneInstruction<?> instruction = handle.disassembleInstruction(subData, runtimeAddress);
+                        System.out.printf("\n%016X  %s %s\n", instruction.getAddress(), instruction.getMnemonic(), instruction.getOpStr());
                         if(instruction.getDetails() != null) {
                             System.out.println("Registers read count: " + instruction.getDetails().getRegsReadCount());
                             System.out.println("Registers read: " + Arrays.toString(instruction.getDetails().getRegsRead()));
