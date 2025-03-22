@@ -491,4 +491,99 @@ public class CapstoneInstruction<T extends CapstoneArchDetails> {
         }
         return false;
     }
+
+    /**
+     * Returns the number of operands of a specific type for this instruction.
+     * <p>
+     * This method queries the architecture-specific details of the instruction to count
+     * how many operands of the given type are present. The operand types are architecture-specific
+     * and are typically defined as constants in the corresponding architecture detail classes
+     * (e.g., {@code CapstoneX86OpType} for X86 architecture).
+     * <p>
+     * This information is useful for:
+     * <ul>
+     *   <li>Analyzing instruction behavior based on operand types</li>
+     *   <li>Identifying memory references, register operands, or immediate values</li>
+     *   <li>Supporting architecture-specific code analysis or transformation</li>
+     * </ul>
+     * <p>
+     * Example usage for X86 architecture:
+     * <pre>{@code
+     * // Disassemble an instruction
+     * CapstoneInstruction<CapstoneX86Details> instruction = handle.disassembleInstruction(code, address);
+     * 
+     * // Count memory operands
+     * int memOpCount = instruction.getOpCount(CapstoneX86Details.OpType.MEM.getValue());
+     * System.out.println("This instruction has " + memOpCount + " memory operands");
+     * 
+     * // Count register operands
+     * int regOpCount = instruction.getOpCount(CapstoneX86Details.OpType.REG.getValue());
+     * System.out.println("This instruction has " + regOpCount + " register operands");
+     * }</pre>
+     * <p>
+     * Note that this method requires instruction details to be available, which means
+     * the {@link CapstoneOption#DETAIL} option must have been enabled when creating the
+     * Capstone handle.
+     *
+     * @param opType the numeric identifier for the type of operand to count
+     * @return the number of operands of the specified type, or -1 if instruction details are not available
+     * @see CapstoneArchDetails#getOpCounOfType(int)
+     * @see CapstoneInstructionDetails#getArchDetails()
+     */
+    public int getOpCount(int opType) {
+        if(this.details == null) {
+            return -1;
+        }
+        return this.details.getArchDetails().getOpCounOfType(opType);
+    }
+
+    // TODO: UPDATE JAVADOC LATER
+
+    /**
+     * Returns the index of a specific operand within the operands array of this instruction.
+     * <p>
+     * This method queries the architecture-specific details of the instruction to find
+     * the position (index) of an operand of the given type at the specified occurrence position.
+     * The operand types are architecture-specific and are typically defined as constants in 
+     * the corresponding architecture detail classes.
+     * <p>
+     * This is particularly useful when:
+     * <ul>
+     *   <li>You need to retrieve a specific operand (e.g., the first memory operand)</li>
+     *   <li>Processing only certain types of operands in an instruction</li>
+     *   <li>Implementing advanced code analysis that requires operand-specific handling</li>
+     * </ul>
+     * <p>
+     * Example usage for X86 architecture:
+     * <pre>{@code
+     * // Disassemble an instruction
+     * CapstoneInstruction<CapstoneX86Details> instruction = handle.disassembleInstruction(code, address);
+     * 
+     * // Get the index of the first memory operand
+     * int memOpIndex = instruction.getOpIndex(CapstoneX86Details.OpType.MEM.getValue(), 1);
+     * if (memOpIndex != -1) {
+     *     // Access the memory operand using the index
+     *     CapstoneX86Details details = instruction.getDetails().getArchDetails();
+     *     CapstoneX86Details.Operand memOp = (CapstoneX86Details.Operand)details.getOperands()[memOpIndex];
+     *     System.out.println("Base register: " + handle.getRegName(memOp.getMem().getBase()));
+     * }
+     * }</pre>
+     * <p>
+     * Note that this method requires instruction details to be available, which means
+     * the {@link CapstoneOption#DETAIL} option must have been enabled when creating the
+     * Capstone handle.
+     *
+     * @param opType the numeric identifier for the type of operand to find
+     * @param position the occurrence position of the operand type (1 for first occurrence, 2 for second, etc.)
+     * @return the index of the specified operand in the operands array, or -1 if not found or if instruction details are not available
+     * @see CapstoneArchDetails#getOpIndex(int, int)
+     * @see CapstoneInstructionDetails#getArchDetails()
+     * @see #getOpCount(int)
+     */
+    public int getOpIndex(int opType, int position) {
+        if(this.details == null) {
+            return -1;
+        }
+        return this.details.getArchDetails().getOpIndex(opType, position);
+    }
 }
