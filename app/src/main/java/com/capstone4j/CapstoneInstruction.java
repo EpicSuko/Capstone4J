@@ -8,14 +8,23 @@ package com.capstone4j;
  * operand string, size, and memory address. It also provides access to detailed information about
  * the instruction through the {@link CapstoneInstructionDetails} class.
  * <p>
+ * The generic type parameter {@code T} represents the architecture-specific details associated
+ * with this instruction. Different processor architectures have different instruction formats,
+ * operand types, and special behaviors. The type parameter allows for strongly-typed access to
+ * architecture-specific information:
+ * <ul>
+ *   <li>For X86 architecture: {@code CapstoneInstruction<CapstoneX86Details>}</li>
+ *   <li>For other architectures: their corresponding architecture-specific detail classes</li>
+ * </ul>
+ * <p>
  * Instances of this class are immutable and are typically created by the
  * {@link CapstoneInstructionFactory#createFromMemorySegment} method when the 
  * {@link CapstoneHandle#disassembleInstruction} method is called.
  * <p>
  * Example usage:
  * <pre>{@code
- * // Disassemble a single instruction
- * CapstoneInstruction instruction = handle.disassembleInstruction(bytes, address);
+ * // Disassemble a single instruction with architecture-specific details for X86
+ * CapstoneInstruction<CapstoneX86Details> instruction = handle.disassembleInstruction(bytes, address);
  * 
  * // Get basic information about the instruction
  * System.out.println("Address: 0x" + Long.toHexString(instruction.getAddress()));
@@ -25,15 +34,36 @@ package com.capstone4j;
  * 
  * // Get detailed information if available
  * if (instruction.getDetails() != null) {
+ *     // Access common details
  *     System.out.println("Registers read: " + Arrays.toString(instruction.getDetails().getRegsRead()));
  *     System.out.println("Registers written: " + Arrays.toString(instruction.getDetails().getRegsWrite()));
+ *     
+ *     // Access architecture-specific details
+ *     CapstoneX86Details x86Details = instruction.getDetails().getArchDetails();
+ *     System.out.println("Operand count: " + x86Details.getOpCount());
+ *     
+ *     // Check instruction groups
+ *     if (instruction.isInsnGroup(CapstoneGroup.JUMP)) {
+ *         System.out.println("This is a jump instruction");
+ *     }
  * }
  * }</pre>
+ * <p>
+ * To access architecture-specific details, you need to:
+ * <ol>
+ *   <li>Enable instruction details using {@code setOption(CapstoneOption.DETAIL, CapstoneOptionValue.ON)}</li>
+ *   <li>Use the appropriate generic type parameter when working with the instruction</li>
+ *   <li>Access the architecture details via {@code getDetails().getArchDetails()}</li>
+ * </ol>
  * 
+ * @param <T> the type of architecture-specific details this instruction will contain,
+ *            must extend {@link CapstoneArchDetails}
  * @see CapstoneHandle
  * @see CapstoneInstructionDetails
+ * @see CapstoneArchDetails
+ * @see CapstoneOption#DETAIL
  */
-public class CapstoneInstruction {
+public class CapstoneInstruction<T extends CapstoneArchDetails> {
 
     private final int id;
     private final long aliasId;
@@ -44,7 +74,7 @@ public class CapstoneInstruction {
     private final String opStr;
     private final boolean isAlias;
     private final boolean usesAliasDetails;
-    private final CapstoneInstructionDetails details;
+    private final CapstoneInstructionDetails<T> details;
     private final CapstoneArch arch;
 
     /**
@@ -63,8 +93,9 @@ public class CapstoneInstruction {
      * @param isAlias whether this instruction is an alias of another instruction
      * @param usesAliasDetails whether alias details should be used for this instruction
      * @param details detailed information about the instruction, or null if not available
+     * @param arch the architecture for which this instruction was disassembled
      */
-    CapstoneInstruction(int id, long aliasId, long address, int size, byte[] bytes, String mnemonic, String opStr, boolean isAlias, boolean usesAliasDetails, CapstoneInstructionDetails details, CapstoneArch arch) {
+    CapstoneInstruction(int id, long aliasId, long address, int size, byte[] bytes, String mnemonic, String opStr, boolean isAlias, boolean usesAliasDetails, CapstoneInstructionDetails<T> details, CapstoneArch arch) {
         this.id = id;
         this.aliasId = aliasId;
         this.address = address;
@@ -193,12 +224,31 @@ public class CapstoneInstruction {
      * such as registers read and written, instruction groups, and more. This information
      * is only available if the {@link CapstoneHandle} was configured to provide details
      * by setting the {@link CapstoneOption#DETAIL} option to {@link CapstoneOptionValue#ON}.
+     * <p>
+     * Through the returned object, you can also access architecture-specific details via
+     * the {@link CapstoneInstructionDetails#getArchDetails()} method. The type of these
+     * architecture-specific details corresponds to the generic type parameter {@code T} of this class.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // With details enabled and using the proper generic type
+     * CapstoneInstruction<CapstoneX86Details> instruction = handle.disassembleInstruction(code, address);
+     * if (instruction.getDetails() != null) {
+     *     // Access common details
+     *     System.out.println("Registers read: " + Arrays.toString(instruction.getDetails().getRegsRead()));
+     *     
+     *     // Access architecture-specific details
+     *     CapstoneX86Details x86Details = instruction.getDetails().getArchDetails();
+     *     System.out.println("Operand count: " + x86Details.getOpCount());
+     * }
+     * }</pre>
      *
      * @return detailed information about this instruction, or {@code null} if not available
      * @see CapstoneInstructionDetails
+     * @see CapstoneArchDetails
      * @see CapstoneHandle#setOption(CapstoneOption, CapstoneOptionValue)
      */
-    public CapstoneInstructionDetails getDetails() {
+    public CapstoneInstructionDetails<T> getDetails() {
         return this.details;
     }
 

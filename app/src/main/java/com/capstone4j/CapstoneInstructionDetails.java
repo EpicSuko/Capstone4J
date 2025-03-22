@@ -1,6 +1,6 @@
 package com.capstone4j;
 
-public class CapstoneInstructionDetails {
+public class CapstoneInstructionDetails<T extends CapstoneArchDetails> {
 
     private final int[] regsRead;
     private final int regsReadCount;
@@ -9,8 +9,9 @@ public class CapstoneInstructionDetails {
     private final int[] groups;
     private final int groupsCount;
     private final boolean writeback;
+    private final T archDetails;
 
-    CapstoneInstructionDetails(int[] regsRead, int regsReadCount, int[] regsWrite, int regsWriteCount, int[] groups, int groupsCount, boolean writeback) {
+    CapstoneInstructionDetails(int[] regsRead, int regsReadCount, int[] regsWrite, int regsWriteCount, int[] groups, int groupsCount, boolean writeback, T archDetails) {
         this.regsRead = regsRead;
         this.regsReadCount = regsReadCount;
         this.regsWrite = regsWrite;
@@ -18,6 +19,7 @@ public class CapstoneInstructionDetails {
         this.groups = groups;
         this.groupsCount = groupsCount;
         this.writeback = writeback;
+        this.archDetails = archDetails;
     }
 
     public int[] getRegsRead() {
@@ -46,5 +48,9 @@ public class CapstoneInstructionDetails {
 
     public boolean isWriteback() {
         return this.writeback;
+    }
+
+    public T getArchDetails() {
+        return this.archDetails;
     }
 }

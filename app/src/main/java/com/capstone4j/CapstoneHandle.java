@@ -227,28 +227,54 @@ public class CapstoneHandle implements AutoCloseable {
      * disassembly functionality to analyze the code and create a Java representation of
      * the instruction.
      * <p>
+     * The generic type parameter {@code T} represents the architecture-specific details
+     * that will be included in the disassembled instruction. The actual type of {@code T}
+     * depends on the architecture specified when creating the {@link CapstoneHandle}:
+     * <ul>
+     *   <li>For X86 architecture: {@code CapstoneInstruction<CapstoneX86Details>}</li>
+     *   <li>For other architectures: corresponding architecture-specific detail classes</li>
+     * </ul>
+     * <p>
      * The method allocates temporary memory for the disassembly process and ensures proper
      * cleanup, regardless of whether the disassembly succeeds or fails.
      * <p>
-     * Example usage:
+     * Example usage for X86 architecture:
      * <pre>{@code
      * byte[] machineCode = new byte[] { (byte)0x55, (byte)0x48, (byte)0x89, (byte)0xe5 }; // x86 "push rbp; mov rbp, rsp"
      * long virtualAddress = 0x1000;
-     * CapstoneInstruction instruction = handle.disassembleInstruction(machineCode, virtualAddress);
+     * 
+     * // Enable instruction details for architecture-specific information
+     * handle.setOption(CapstoneOption.DETAIL, CapstoneOptionValue.ON);
+     * 
+     * CapstoneInstruction<CapstoneX86Details> instruction = handle.disassembleInstruction(machineCode, virtualAddress);
      * if (instruction != null) {
      *     System.out.println(instruction.getMnemonic() + " " + instruction.getOpStr());
+     *     
+     *     // Access architecture-specific details
+     *     if (instruction.getDetails() != null) {
+     *         CapstoneX86Details x86Details = instruction.getDetails().getArchDetails();
+     *         System.out.println("Operand count: " + x86Details.getOpCount());
+     *     }
      * }
      * }</pre>
+     * <p>
+     * To get the full benefit of architecture-specific details, you should cast the returned
+     * instruction to the appropriate type based on the architecture you're working with, and
+     * enable instruction details using {@code setOption(CapstoneOption.DETAIL, CapstoneOptionValue.ON)}.
      *
+     * @param <T> the type of architecture-specific details this instruction will contain,
+     *            must extend {@link CapstoneArchDetails}
      * @param code the byte array containing the machine code to disassemble
      * @param address the virtual address where the code is located (used for instruction addressing)
-     * @return a {@link CapstoneInstruction} object representing the disassembled instruction,
-     *         or {@code null} if disassembly failed
+     * @return a {@link CapstoneInstruction} object representing the disassembled instruction with
+     *         architecture-specific details of type {@code T}, or {@code null} if disassembly failed
      * @throws RuntimeException if the Capstone handle is not initialized or if an error occurs during disassembly
      * @see CapstoneInstruction
-     * @see CapstoneInstructionFactory
+     * @see CapstoneInstructionDetails
+     * @see CapstoneArchDetails
+     * @see CapstoneOption#DETAIL
      */
-    public CapstoneInstruction disassembleInstruction(byte[] code, long address) {
+    public <T extends CapstoneArchDetails> CapstoneInstruction<T> disassembleInstruction(byte[] code, long address) {
         if(this.handle == null) {
             throw new RuntimeException("Capstone handle is not initialized");
         }
@@ -272,7 +298,7 @@ public class CapstoneHandle implements AutoCloseable {
                 insn
             );
 
-            CapstoneInstruction instruction = null;
+            CapstoneInstruction<T> instruction = null;
 
             if(result) {
                 instruction = CapstoneInstructionFactory.createFromMemorySegment(insn, this.arch, this.parseDetails);

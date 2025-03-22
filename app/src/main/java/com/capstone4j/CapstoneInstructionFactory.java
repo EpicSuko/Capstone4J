@@ -10,7 +10,7 @@ import java.lang.foreign.ValueLayout;
 
 class CapstoneInstructionFactory {
 
-    public static CapstoneInstruction createFromMemorySegment(MemorySegment segment, CapstoneArch arch, boolean parseDetails) {
+    public static <T extends CapstoneArchDetails> CapstoneInstruction<T> createFromMemorySegment(MemorySegment segment, CapstoneArch arch, boolean parseDetails) {
 
         int size = cs_insn.size(segment);
 
@@ -20,13 +20,13 @@ class CapstoneInstructionFactory {
             bytes[i] = bytesSegment.get(ValueLayout.JAVA_BYTE, i);
         }
 
-        CapstoneInstructionDetails details = null;
+        CapstoneInstructionDetails<T> details = null;
 
         if(parseDetails) {
             details = parseInstructionDetails(cs_insn.detail(segment), arch);
         }
 
-        return new CapstoneInstruction(
+        return new CapstoneInstruction<>(
             cs_insn.id(segment), 
             cs_insn.alias_id(segment), 
             cs_insn.address(segment), 
@@ -41,7 +41,7 @@ class CapstoneInstructionFactory {
         );
     }
 
-    private static CapstoneInstructionDetails parseInstructionDetails(MemorySegment segment, CapstoneArch arch) {
+    private static <T extends CapstoneArchDetails> CapstoneInstructionDetails<T> parseInstructionDetails(MemorySegment segment, CapstoneArch arch) {
         int regsReadCount = cs_detail.regs_read_count(segment);
 
         MemorySegment regsReadSegment = cs_detail.regs_read(segment);
@@ -66,7 +66,20 @@ class CapstoneInstructionFactory {
 
         boolean writeback = cs_detail.writeback(segment);
 
-        return new CapstoneInstructionDetails(regsRead, regsReadCount, regsWrite, regsWriteCount, groups, groupsCount, writeback);
+        Class<T> archDetailsClass;
+        switch (arch) {
+            case X86:
+                @SuppressWarnings("unchecked")
+                Class<T> x86Class = (Class<T>) CapstoneX86Details.class;
+                archDetailsClass = x86Class;
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported architecture: " + arch);
+        }
+        
+        T archDetails = CapstoneArchDetailsFactory.createDetails(segment, arch, archDetailsClass);
+
+        return new CapstoneInstructionDetails<>(regsRead, regsReadCount, regsWrite, regsWriteCount, groups, groupsCount, writeback, archDetails);
     }
 
 }
