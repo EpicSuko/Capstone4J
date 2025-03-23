@@ -226,8 +226,8 @@ public class CapstoneHandle implements AutoCloseable {
      * disassembly functionality to analyze the code and create a Java representation of
      * the instruction.
      * <p>
-     * The generic type parameter {@code T} represents the architecture-specific details
-     * that will be included in the disassembled instruction. The actual type of {@code T}
+     * The generic type parameter {@code A} represents the architecture-specific details
+     * that will be included in the disassembled instruction. The actual type of {@code A}
      * depends on the architecture specified when creating the {@link CapstoneHandle}:
      * <ul>
      *   <li>For X86 architecture: {@code CapstoneInstruction<CapstoneX86Details>}</li>
@@ -261,19 +261,19 @@ public class CapstoneHandle implements AutoCloseable {
      * instruction to the appropriate type based on the architecture you're working with, and
      * enable instruction details using {@code setOption(CapstoneOption.DETAIL, CapstoneOptionValue.ON)}.
      *
-     * @param <T> the type of architecture-specific details this instruction will contain,
+     * @param <A> the type of architecture-specific details this instruction will contain,
      *            must extend {@link CapstoneArchDetails}
      * @param code the byte array containing the machine code to disassemble
      * @param address the virtual address where the code is located (used for instruction addressing)
      * @return a {@link CapstoneInstruction} object representing the disassembled instruction with
-     *         architecture-specific details of type {@code T}, or {@code null} if disassembly failed
+     *         architecture-specific details of type {@code A}, or {@code null} if disassembly failed
      * @throws RuntimeException if the Capstone handle is not initialized or if an error occurs during disassembly
      * @see CapstoneInstruction
      * @see CapstoneInstructionDetails
      * @see CapstoneArchDetails
      * @see CapstoneOption#DETAIL
      */
-    public <T extends CapstoneArchDetails> CapstoneInstruction<T> disassembleInstruction(byte[] code, long address) {
+    public <A extends CapstoneArchDetails<?>> CapstoneInstruction<A> disassembleInstruction(byte[] code, long address) {
         if(this.handle == null) {
             throw new RuntimeException("Capstone handle is not initialized");
         }
@@ -297,7 +297,7 @@ public class CapstoneHandle implements AutoCloseable {
                 insn
             );
 
-            CapstoneInstruction<T> instruction = null;
+            CapstoneInstruction<A> instruction = null;
 
             if(result) {
                 instruction = CapstoneInstructionFactory.createFromMemorySegment(insn, this.arch, this.parseDetails);

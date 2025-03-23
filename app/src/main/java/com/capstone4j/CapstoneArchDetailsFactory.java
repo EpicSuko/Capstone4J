@@ -9,8 +9,8 @@ class CapstoneArchDetailsFactory {
     }
     
     @SuppressWarnings("unchecked")
-    static <T extends CapstoneArchDetails> T createDetails(MemorySegment segment, CapstoneArch arch, Class<T> expectedType) {
-        CapstoneArchDetails result;
+    static <A extends CapstoneArchDetails<?>> A createDetails(MemorySegment segment, CapstoneArch arch, Class<A> expectedType) {
+        CapstoneArchDetails<?> result;
         
         switch(arch) {
             case X86:
@@ -24,6 +24,6 @@ class CapstoneArchDetailsFactory {
                 throw new IllegalArgumentException("Unsupported architecture: " + arch);
         }
         
-        return (T) result;
+        return (A) result;
     }
 }

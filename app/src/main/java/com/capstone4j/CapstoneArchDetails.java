@@ -1,17 +1,17 @@
 package com.capstone4j;
 
-abstract class CapstoneArchDetails {
+abstract class CapstoneArchDetails<T> {
 
     private final int opCount;
-    private final Object[] operands;
+    private final T[] operands;
 
-    CapstoneArchDetails(int opCount, Object[] operands) {
+    CapstoneArchDetails(int opCount, T[] operands) {
         this.opCount = opCount;
         this.operands = operands;
     }
 
     abstract int getOpCounOfType(int opType);
-    abstract boolean isOperandOfType(Object operand, int opType);
+    abstract boolean isOperandOfType(T operand, int opType);
 
     int getOpIndex(int opType, int position) {
         if (position < 1 || position > getOpCounOfType(opType)) {
@@ -34,7 +34,7 @@ abstract class CapstoneArchDetails {
         return this.opCount;
     }
 
-    public Object[] getOperands() {
+    public T[] getOperands() {
         return this.operands;
     }
 }

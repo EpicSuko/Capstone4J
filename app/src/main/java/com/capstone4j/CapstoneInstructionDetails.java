@@ -7,20 +7,20 @@ package com.capstone4j;
  * including instruction groups, architecture-specific details, and access to register
  * information through the {@link #getRegAccess()} method.
  * <p>
- * The generic type parameter {@code T} represents the architecture-specific details
+ * The generic type parameter {@code A} represents the architecture-specific details
  * associated with this instruction.
  * 
- * @param <T> the type of architecture-specific details, must extend {@link CapstoneArchDetails}
+ * @param <A> the type of architecture-specific details, must extend {@link CapstoneArchDetails}
  * @see CapstoneInstruction
  * @see CapstoneRegAccess
  * @see CapstoneArchDetails
  */
-public class CapstoneInstructionDetails<T extends CapstoneArchDetails> {
+public class CapstoneInstructionDetails<A extends CapstoneArchDetails<?>> {
     private final CapstoneRegAccess regAccess;
     private final int[] groups;
     private final int groupsCount;
     private final boolean writeback;
-    private final T archDetails;
+    private final A archDetails;
 
     /**
      * Constructs a new CapstoneInstructionDetails object with the specified properties.
@@ -37,7 +37,7 @@ public class CapstoneInstructionDetails<T extends CapstoneArchDetails> {
      * @param writeback whether this instruction performs a memory write-back
      * @param archDetails architecture-specific details for this instruction
      */
-    CapstoneInstructionDetails(int[] regsRead, int regsReadCount, int[] regsWrite, int regsWriteCount, int[] groups, int groupsCount, boolean writeback, T archDetails) {
+    CapstoneInstructionDetails(int[] regsRead, int regsReadCount, int[] regsWrite, int regsWriteCount, int[] groups, int groupsCount, boolean writeback, A archDetails) {
         this.regAccess = new CapstoneRegAccess(regsRead, regsReadCount, regsWrite, regsWriteCount);
         this.groups = groups;
         this.groupsCount = groupsCount;
@@ -97,16 +97,29 @@ public class CapstoneInstructionDetails<T extends CapstoneArchDetails> {
     }
 
     /**
-     * Returns architecture-specific details for this instruction.
+     * Returns the architecture-specific details for this instruction.
      * <p>
-     * This method provides access to details that are specific to the
-     * processor architecture for which this instruction was disassembled.
-     * The returned object's type corresponds to the generic type parameter
-     * {@code T} of this class.
+     * The returned object provides access to architecture-specific information
+     * about the instruction, such as operands, addressing modes, and more.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // With details enabled and using the proper generic type for X86
+     * CapstoneInstruction<CapstoneX86Details> instruction = handle.disassembleInstruction(code, address);
+     * if (instruction.getDetails() != null) {
+     *     CapstoneX86Details x86Details = instruction.getDetails().getArchDetails();
+     *     
+     *     // Access X86-specific information
+     *     CapstoneX86Details.X86Operand[] operands = x86Details.getOperands();
+     *     for (CapstoneX86Details.X86Operand op : operands) {
+     *         // Process each operand
+     *     }
+     * }
+     * }</pre>
      *
-     * @return architecture-specific details for this instruction
+     * @return the architecture-specific details for this instruction
      */
-    public T getArchDetails() {
+    public A getArchDetails() {
         return this.archDetails;
     }
 }

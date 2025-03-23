@@ -8,7 +8,7 @@ package com.capstone4j;
  * operand string, size, and memory address. It also provides access to detailed information about
  * the instruction through the {@link CapstoneInstructionDetails} class.
  * <p>
- * The generic type parameter {@code T} represents the architecture-specific details associated
+ * The generic type parameter {@code A} represents the architecture-specific details associated
  * with this instruction. Different processor architectures have different instruction formats,
  * operand types, and special behaviors. The type parameter allows for strongly-typed access to
  * architecture-specific information:
@@ -56,14 +56,14 @@ package com.capstone4j;
  *   <li>Access the architecture details via {@code getDetails().getArchDetails()}</li>
  * </ol>
  * 
- * @param <T> the type of architecture-specific details this instruction will contain,
+ * @param <A> the type of architecture-specific details this instruction will contain,
  *            must extend {@link CapstoneArchDetails}
  * @see CapstoneHandle
  * @see CapstoneInstructionDetails
  * @see CapstoneArchDetails
  * @see CapstoneOption#DETAIL
  */
-public class CapstoneInstruction<T extends CapstoneArchDetails> {
+public class CapstoneInstruction<A extends CapstoneArchDetails<?>> {
 
     private final int id;
     private final long aliasId;
@@ -74,7 +74,7 @@ public class CapstoneInstruction<T extends CapstoneArchDetails> {
     private final String opStr;
     private final boolean isAlias;
     private final boolean usesAliasDetails;
-    private final CapstoneInstructionDetails<T> details;
+    private final CapstoneInstructionDetails<A> details;
     private final CapstoneArch arch;
 
     /**
@@ -95,7 +95,7 @@ public class CapstoneInstruction<T extends CapstoneArchDetails> {
      * @param details detailed information about the instruction, or null if not available
      * @param arch the architecture for which this instruction was disassembled
      */
-    CapstoneInstruction(int id, long aliasId, long address, int size, byte[] bytes, String mnemonic, String opStr, boolean isAlias, boolean usesAliasDetails, CapstoneInstructionDetails<T> details, CapstoneArch arch) {
+    CapstoneInstruction(int id, long aliasId, long address, int size, byte[] bytes, String mnemonic, String opStr, boolean isAlias, boolean usesAliasDetails, CapstoneInstructionDetails<A> details, CapstoneArch arch) {
         this.id = id;
         this.aliasId = aliasId;
         this.address = address;
@@ -227,7 +227,7 @@ public class CapstoneInstruction<T extends CapstoneArchDetails> {
      * <p>
      * Through the returned object, you can also access architecture-specific details via
      * the {@link CapstoneInstructionDetails#getArchDetails()} method. The type of these
-     * architecture-specific details corresponds to the generic type parameter {@code T} of this class.
+     * architecture-specific details corresponds to the generic type parameter {@code A} of this class.
      * <p>
      * Example usage:
      * <pre>{@code
@@ -248,7 +248,7 @@ public class CapstoneInstruction<T extends CapstoneArchDetails> {
      * @see CapstoneArchDetails
      * @see CapstoneHandle#setOption(CapstoneOption, CapstoneOptionValue)
      */
-    public CapstoneInstructionDetails<T> getDetails() {
+    public CapstoneInstructionDetails<A> getDetails() {
         return this.details;
     }
 

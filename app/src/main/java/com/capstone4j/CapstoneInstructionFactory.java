@@ -10,7 +10,7 @@ import java.lang.foreign.ValueLayout;
 
 class CapstoneInstructionFactory {
 
-    public static <T extends CapstoneArchDetails> CapstoneInstruction<T> createFromMemorySegment(MemorySegment segment, CapstoneArch arch, boolean parseDetails) {
+    public static <A extends CapstoneArchDetails<?>> CapstoneInstruction<A> createFromMemorySegment(MemorySegment segment, CapstoneArch arch, boolean parseDetails) {
 
         int size = cs_insn.size(segment);
 
@@ -20,7 +20,7 @@ class CapstoneInstructionFactory {
             bytes[i] = bytesSegment.get(ValueLayout.JAVA_BYTE, i);
         }
 
-        CapstoneInstructionDetails<T> details = null;
+        CapstoneInstructionDetails<A> details = null;
 
         if(parseDetails) {
             details = parseInstructionDetails(cs_insn.detail(segment), arch);
@@ -41,7 +41,7 @@ class CapstoneInstructionFactory {
         );
     }
 
-    private static <T extends CapstoneArchDetails> CapstoneInstructionDetails<T> parseInstructionDetails(MemorySegment segment, CapstoneArch arch) {
+    private static <A extends CapstoneArchDetails<?>> CapstoneInstructionDetails<A> parseInstructionDetails(MemorySegment segment, CapstoneArch arch) {
         int regsReadCount = cs_detail.regs_read_count(segment);
 
         MemorySegment regsReadSegment = cs_detail.regs_read(segment);
@@ -66,18 +66,18 @@ class CapstoneInstructionFactory {
 
         boolean writeback = cs_detail.writeback(segment);
 
-        Class<T> archDetailsClass;
+        Class<A> archDetailsClass;
         switch (arch) {
             case X86:
                 @SuppressWarnings("unchecked")
-                Class<T> x86Class = (Class<T>) CapstoneX86Details.class;
+                Class<A> x86Class = (Class<A>) CapstoneX86Details.class;
                 archDetailsClass = x86Class;
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported architecture: " + arch);
         }
         
-        T archDetails = CapstoneArchDetailsFactory.createDetails(segment, arch, archDetailsClass);
+        A archDetails = CapstoneArchDetailsFactory.createDetails(segment, arch, archDetailsClass);
 
         return new CapstoneInstructionDetails<>(regsRead, regsReadCount, regsWrite, regsWriteCount, groups, groupsCount, writeback, archDetails);
     }
