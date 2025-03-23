@@ -2,7 +2,6 @@ package com.capstone4j;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
-import java.lang.foreign.ValueLayout;
 
 /**
  * A default implementation of {@link CapstoneMemoryProvider} that uses a Java Arena for memory management.
@@ -122,7 +121,6 @@ public class DefaultCapstoneMemoryProvider implements CapstoneMemoryProvider {
         if (size < 0) {
             throw new IllegalArgumentException("Size cannot be negative");
         }
-        
         return arena.allocate(size);
     }
 
@@ -228,40 +226,5 @@ public class DefaultCapstoneMemoryProvider implements CapstoneMemoryProvider {
         // No explicit action needed - the Arena will handle memory cleanup when closed
         // This is a no-op because Java's Arena-based memory management doesn't require
         // explicit freeing of individual segments
-    }
-
-    /**
-     * Formats a string using a format string and variable arguments, and writes it to a buffer.
-     * <p>
-     * This method corresponds to the C {@code vsnprintf} function. It is used by Capstone
-     * for formatting error messages and other output.
-     * <p>
-     * <strong>Note:</strong> This is a simplified implementation that doesn't fully implement
-     * the C vsnprintf functionality. In the current version, it simply writes a null terminator
-     * to the destination buffer. A complete implementation would need to parse the format string
-     * and handle variable arguments properly.
-     *
-     * @param str the buffer to write the formatted string to
-     * @param size the size of the buffer in bytes
-     * @param format the format string
-     * @param ap the variable arguments pointer
-     * @return the number of characters that would have been written if {@code size} had been
-     *         sufficiently large, not counting the terminating null character
-     */
-    @Override
-    public int vsnprintf(MemorySegment str, long size, MemorySegment format, MemorySegment ap) {
-        // This is a simplified implementation 
-        // In a real implementation, this would need to parse the format string and handle
-        // variable arguments properly
-        
-        if (str == null || size <= 0) {
-            return 0;
-        }
-        
-        // Just return an empty string for now
-        // This is a placeholder and should be replaced with a proper implementation
-        str.set(ValueLayout.JAVA_BYTE, 0, (byte) 0);
-        
-        return 0;
     }
 } 

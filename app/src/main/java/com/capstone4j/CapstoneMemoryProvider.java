@@ -84,6 +84,10 @@ public interface CapstoneMemoryProvider {
      * <p>
      * This method corresponds to the C {@code vsnprintf} function. It is used by Capstone
      * for formatting error messages and other output.
+     * <p>
+     * This method has a default implementation that uses {@link FormatStringParser#vsnprintf}
+     * for format string parsing and value formatting. Implementations can override this method
+     * to provide custom formatting logic if needed.
      *
      * @param str the buffer to write the formatted string to
      * @param size the size of the buffer in bytes
@@ -92,6 +96,7 @@ public interface CapstoneMemoryProvider {
      * @return the number of characters that would have been written if {@code size} had been
      *         sufficiently large, not counting the terminating null character
      */
-    int vsnprintf(MemorySegment str, long size, MemorySegment format, MemorySegment ap);
-
+    default int vsnprintf(MemorySegment str, long size, MemorySegment format, MemorySegment ap) {
+        return FormatStringParser.vsnprintf(str, size, format, ap);
+    }
 }
