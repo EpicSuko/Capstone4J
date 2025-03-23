@@ -6,7 +6,6 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 
-// TODO: Work on vsnprintf implementation
 // TODO: (Optional) Create a new CapstoneMemoryProvider that maps the memory segment address to a Arena so that we can close the arena when the memory is freed instead of waiting for the Arena to be closed
 
 public class CapstoneHandle implements AutoCloseable {
