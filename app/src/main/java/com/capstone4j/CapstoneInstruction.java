@@ -428,10 +428,11 @@ public class CapstoneInstruction<T extends CapstoneArchDetails> {
      * @see CapstoneHandle#getRegName(int)
      */
     public boolean isRegRead(int regId) {
-        if(this.details == null) {
+        CapstoneRegAccess regAccess = getRegAccess();
+        if(regAccess == null) {
             return false;
         }
-        for(int reg : this.details.getRegsRead()) {
+        for(int reg : regAccess.getRegsRead()) {
             if(reg == regId) {
                 return true;
             }
@@ -481,10 +482,11 @@ public class CapstoneInstruction<T extends CapstoneArchDetails> {
      * @see #isRegRead(int)
      */
     public boolean isRegWrite(int regId) {
-        if(this.details == null) {
+        CapstoneRegAccess regAccess = getRegAccess();
+        if(regAccess == null) {
             return false;
         }
-        for(int reg : this.details.getRegsWrite()) {
+        for(int reg : regAccess.getRegsWrite()) {
             if(reg == regId) {
                 return true;
             }
@@ -585,5 +587,54 @@ public class CapstoneInstruction<T extends CapstoneArchDetails> {
             return -1;
         }
         return this.details.getArchDetails().getOpIndex(opType, position);
+    }
+
+    /**
+     * Returns information about register access for this instruction.
+     * <p>
+     * This method provides access to detailed information about which registers 
+     * are read from and written to by this instruction. The returned {@link CapstoneRegAccess}
+     * object encapsulates arrays of register IDs that are accessed by the instruction,
+     * allowing you to analyze register usage patterns.
+     * <p>
+     * This information is particularly useful for:
+     * <ul>
+     *   <li>Performing data flow analysis in a program</li>
+     *   <li>Tracking register dependencies across multiple instructions</li>
+     *   <li>Implementing register allocation algorithms in a compiler</li>
+     *   <li>Identifying potential hazards in pipelined processor implementations</li>
+     * </ul>
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // Disassemble an instruction
+     * CapstoneInstruction instruction = handle.disassembleInstruction(code, address);
+     * 
+     * // Get register access information
+     * CapstoneRegAccess regAccess = instruction.getRegAccess();
+     * if (regAccess != null) {
+     *     System.out.println("Registers read: " + Arrays.toString(regAccess.getRegsRead()));
+     *     System.out.println("Registers written: " + Arrays.toString(regAccess.getRegsWrite()));
+     *     System.out.println("Number of registers read: " + regAccess.getRegsReadCount());
+     *     System.out.println("Number of registers written: " + regAccess.getRegsWriteCount());
+     * }
+     * }</pre>
+     * <p>
+     * Note that this method requires instruction details to be available, which means
+     * the {@link CapstoneOption#DETAIL} option must have been enabled when creating the
+     * Capstone handle.
+     *
+     * @return a {@link CapstoneRegAccess} object containing information about register access,
+     *         or {@code null} if instruction details are not available
+     * @see CapstoneRegAccess
+     * @see CapstoneInstructionDetails
+     * @see #isRegRead(int)
+     * @see #isRegWrite(int)
+     */
+    public CapstoneRegAccess getRegAccess() {
+        if(this.details == null) {
+            return null;
+        }
+        return this.details.getRegAccess();
     }
 }

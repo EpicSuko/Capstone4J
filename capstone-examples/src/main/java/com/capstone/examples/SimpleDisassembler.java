@@ -47,18 +47,25 @@ public class SimpleDisassembler {
                         byte[] subData = Arrays.copyOfRange(data, offset, offset + maxBytesToRead);
                         CapstoneInstruction<?> instruction = handle.disassembleInstruction(subData, runtimeAddress);
                         System.out.printf("\n%016X  %s %s\n", instruction.getAddress(), instruction.getMnemonic(), instruction.getOpStr());
+                        System.out.println("Instruction size: " + instruction.getSize());
+                        System.out.println("Instruction bytes: " + Arrays.toString(instruction.getBytes()));
                         if(instruction.getDetails() != null) {
-                            System.out.println("Registers read count: " + instruction.getDetails().getRegsReadCount());
-                            System.out.println("Registers read: " + Arrays.toString(instruction.getDetails().getRegsRead()));
-                            System.out.println("Registers written count: " + instruction.getDetails().getRegsWriteCount());
-                            System.out.println("Registers written: " + Arrays.toString(instruction.getDetails().getRegsWrite()));
+                            // Access register information through getRegAccess()
+                            System.out.println("Registers read count: " + instruction.getRegAccess().getRegsReadCount());
+                            System.out.println("Registers read: " + Arrays.toString(instruction.getRegAccess().getRegsRead()));
+                            System.out.println("Registers written count: " + instruction.getRegAccess().getRegsWriteCount());
+                            System.out.println("Registers written: " + Arrays.toString(instruction.getRegAccess().getRegsWrite()));
+                            
+                            // Continue accessing other details directly
                             System.out.println("Groups count: " + instruction.getDetails().getGroupsCount());
                             System.out.println("Groups: " + Arrays.toString(instruction.getDetails().getGroups()));
                             System.out.println("Writeback: " + instruction.getDetails().isWriteback());
-                            for(int regId : instruction.getDetails().getRegsRead()) {
+                            
+                            // Use getRegAccess() for register operations
+                            for(int regId : instruction.getRegAccess().getRegsRead()) {
                                 System.out.println("Reg read: " + handle.getRegName(regId));
                             }
-                            for(int regId : instruction.getDetails().getRegsWrite()) {
+                            for(int regId : instruction.getRegAccess().getRegsWrite()) {
                                 System.out.println("Reg write: " + handle.getRegName(regId));
                             }
                             System.out.println("Instruction name: " + handle.getInsnName(instruction.getId()));

@@ -1,55 +1,111 @@
 package com.capstone4j;
 
+/**
+ * Contains detailed information about a disassembled instruction.
+ * <p>
+ * This class provides access to additional information about a disassembled instruction,
+ * including instruction groups, architecture-specific details, and access to register
+ * information through the {@link #getRegAccess()} method.
+ * <p>
+ * The generic type parameter {@code T} represents the architecture-specific details
+ * associated with this instruction.
+ * 
+ * @param <T> the type of architecture-specific details, must extend {@link CapstoneArchDetails}
+ * @see CapstoneInstruction
+ * @see CapstoneRegAccess
+ * @see CapstoneArchDetails
+ */
 public class CapstoneInstructionDetails<T extends CapstoneArchDetails> {
-
-    private final int[] regsRead;
-    private final int regsReadCount;
-    private final int[] regsWrite;
-    private final int regsWriteCount;
+    private final CapstoneRegAccess regAccess;
     private final int[] groups;
     private final int groupsCount;
     private final boolean writeback;
     private final T archDetails;
 
+    /**
+     * Constructs a new CapstoneInstructionDetails object with the specified properties.
+     * <p>
+     * This constructor is package-private and is intended to be used internally by the
+     * Capstone engine during disassembly.
+     *
+     * @param regsRead array of register IDs that are read by the instruction
+     * @param regsReadCount number of registers that are read by the instruction
+     * @param regsWrite array of register IDs that are written to by the instruction
+     * @param regsWriteCount number of registers that are written to by the instruction
+     * @param groups array of instruction group IDs that this instruction belongs to
+     * @param groupsCount number of instruction groups that this instruction belongs to
+     * @param writeback whether this instruction performs a memory write-back
+     * @param archDetails architecture-specific details for this instruction
+     */
     CapstoneInstructionDetails(int[] regsRead, int regsReadCount, int[] regsWrite, int regsWriteCount, int[] groups, int groupsCount, boolean writeback, T archDetails) {
-        this.regsRead = regsRead;
-        this.regsReadCount = regsReadCount;
-        this.regsWrite = regsWrite;
-        this.regsWriteCount = regsWriteCount;
+        this.regAccess = new CapstoneRegAccess(regsRead, regsReadCount, regsWrite, regsWriteCount);
         this.groups = groups;
         this.groupsCount = groupsCount;
         this.writeback = writeback;
         this.archDetails = archDetails;
     }
 
-    public int[] getRegsRead() {
-        return this.regsRead;
+    /**
+     * Returns register access information for this instruction.
+     * <p>
+     * This method provides access to information about which registers are read
+     * from and written to by this instruction. To access register information, use:
+     * <pre>{@code
+     * // Get registers read
+     * int[] regsRead = details.getRegAccess().getRegsRead();
+     * 
+     * // Get registers written
+     * int[] regsWrite = details.getRegAccess().getRegsWrite();
+     * }</pre>
+     *
+     * @return a {@link CapstoneRegAccess} object containing register access information
+     */
+    public CapstoneRegAccess getRegAccess() {
+        return this.regAccess;
     }
 
-    public int getRegsReadCount() {
-        return this.regsReadCount;
-    }
-
-    public int[] getRegsWrite() {
-        return this.regsWrite;
-    }
-
-    public int getRegsWriteCount() {
-        return this.regsWriteCount;
-    }
-
+    /**
+     * Returns an array of instruction group IDs that this instruction belongs to.
+     * <p>
+     * Instruction groups categorize instructions based on their functionality
+     * or behavior (e.g., jump instructions, call instructions, etc.).
+     *
+     * @return an array of instruction group IDs
+     * @see CapstoneInstruction#isInsnGroup(int)
+     */
     public int[] getGroups() {
         return this.groups;
     }
 
+    /**
+     * Returns the number of instruction groups that this instruction belongs to.
+     *
+     * @return the number of instruction groups
+     * @see #getGroups()
+     */
     public int getGroupsCount() {
         return this.groupsCount;
     }
 
+    /**
+     * Returns whether this instruction performs a memory write-back.
+     *
+     * @return {@code true} if this instruction performs a memory write-back, {@code false} otherwise
+     */
     public boolean isWriteback() {
         return this.writeback;
     }
 
+    /**
+     * Returns architecture-specific details for this instruction.
+     * <p>
+     * This method provides access to details that are specific to the
+     * processor architecture for which this instruction was disassembled.
+     * The returned object's type corresponds to the generic type parameter
+     * {@code T} of this class.
+     *
+     * @return architecture-specific details for this instruction
+     */
     public T getArchDetails() {
         return this.archDetails;
     }
