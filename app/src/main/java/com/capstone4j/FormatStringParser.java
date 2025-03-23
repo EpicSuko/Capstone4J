@@ -11,6 +11,8 @@ import java.lang.foreign.ValueLayout;
  * This class provides functionality to parse C-style format strings and format values
  * accordingly. It is used by the {@link DefaultCapstoneMemoryProvider#vsnprintf} method
  * to handle format string parsing and value formatting.
+ * <p>
+ * Reference : {@url https://github.com/weiss/c99-snprintf/blob/master/snprintf.c}
  */
 class FormatStringParser {
 
