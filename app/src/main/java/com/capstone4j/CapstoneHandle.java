@@ -336,8 +336,8 @@ public class CapstoneHandle implements AutoCloseable {
      * @param regId the architecture-specific register identifier
      * @return the human-readable name of the register
      * @throws RuntimeException if the Capstone handle is not initialized or if the register name could not be retrieved
-     * @see CapstoneInstructionDetails#getRegsRead()
-     * @see CapstoneInstructionDetails#getRegsWrite()
+     * @see CapstoneRegAccess#getRegsRead()
+     * @see CapstoneRegAccess#getRegsWrite()
      */
     public String getRegName(int regId) {
         if(this.handle == null) {

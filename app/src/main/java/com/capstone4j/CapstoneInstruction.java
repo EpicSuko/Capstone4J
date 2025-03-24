@@ -423,8 +423,8 @@ public class CapstoneInstruction<A extends CapstoneArchDetails<?>> {
      * @param regId the numeric identifier of the register to check for
      * @return {@code true} if the instruction reads from the specified register, {@code false} otherwise
      *         or if instruction details are not available
-     * @see CapstoneInstructionDetails#getRegsRead()
-     * @see CapstoneInstructionDetails#getRegsReadCount()
+     * @see CapstoneRegAccess#getRegsRead()
+     * @see CapstoneRegAccess#getRegsReadCount()
      * @see CapstoneHandle#getRegName(int)
      */
     public boolean isRegRead(int regId) {
@@ -476,8 +476,8 @@ public class CapstoneInstruction<A extends CapstoneArchDetails<?>> {
      * @param regId the numeric identifier of the register to check for
      * @return {@code true} if the instruction writes to the specified register, {@code false} otherwise
      *         or if instruction details are not available
-     * @see CapstoneInstructionDetails#getRegsWrite()
-     * @see CapstoneInstructionDetails#getRegsWriteCount()
+     * @see CapstoneRegAccess#getRegsWrite()
+     * @see CapstoneRegAccess#getRegsWriteCount()
      * @see CapstoneHandle#getRegName(int)
      * @see #isRegRead(int)
      */
