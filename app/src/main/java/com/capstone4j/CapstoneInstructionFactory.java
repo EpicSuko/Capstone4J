@@ -66,18 +66,21 @@ class CapstoneInstructionFactory {
 
         boolean writeback = cs_detail.writeback(segment);
 
+        MemorySegment archDetailsSegment = null;
+
         Class<A> archDetailsClass;
         switch (arch) {
             case X86:
                 @SuppressWarnings("unchecked")
                 Class<A> x86Class = (Class<A>) CapstoneX86Details.class;
                 archDetailsClass = x86Class;
+                archDetailsSegment = cs_detail.x86(segment);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported architecture: " + arch);
         }
         
-        A archDetails = CapstoneArchDetailsFactory.createDetails(segment, arch, archDetailsClass);
+        A archDetails = CapstoneArchDetailsFactory.createDetails(archDetailsSegment, arch, archDetailsClass);
 
         return new CapstoneInstructionDetails<>(regsRead, regsReadCount, regsWrite, regsWriteCount, groups, groupsCount, writeback, archDetails);
     }
