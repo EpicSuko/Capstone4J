@@ -539,8 +539,6 @@ public class CapstoneInstruction<A extends CapstoneArchDetails<?>> {
         return this.details.getArchDetails().getOpCounOfType(opType);
     }
 
-    // TODO: UPDATE JAVADOC LATER
-
     /**
      * Returns the index of a specific operand within the operands array of this instruction.
      * <p>
@@ -566,7 +564,7 @@ public class CapstoneInstruction<A extends CapstoneArchDetails<?>> {
      * if (memOpIndex != -1) {
      *     // Access the memory operand using the index
      *     CapstoneX86Details details = instruction.getDetails().getArchDetails();
-     *     CapstoneX86Details.Operand memOp = (CapstoneX86Details.Operand)details.getOperands()[memOpIndex];
+     *     CapstoneX86Details.X86Operand memOp = (CapstoneX86Details.X86Operand)details.getOperands()[memOpIndex];
      *     System.out.println("Base register: " + handle.getRegName(memOp.getMem().getBase()));
      * }
      * }</pre>
