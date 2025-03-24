@@ -62,27 +62,27 @@ public class SimpleDisassembler {
                         System.out.println("Instruction bytes: " + Arrays.toString(instruction.getBytes()));
                         if(instruction.getDetails() != null) {
                             // Access register information through getRegAccess()
-                            // System.out.println("Registers read count: " + instruction.getRegAccess().getRegsReadCount());
-                            // System.out.println("Registers read: " + Arrays.toString(instruction.getRegAccess().getRegsRead()));
-                            // System.out.println("Registers written count: " + instruction.getRegAccess().getRegsWriteCount());
-                            // System.out.println("Registers written: " + Arrays.toString(instruction.getRegAccess().getRegsWrite()));
+                            System.out.println("Registers read count: " + instruction.getRegAccess().getRegsReadCount());
+                            System.out.println("Registers read: " + Arrays.toString(instruction.getRegAccess().getRegsRead()));
+                            System.out.println("Registers written count: " + instruction.getRegAccess().getRegsWriteCount());
+                            System.out.println("Registers written: " + Arrays.toString(instruction.getRegAccess().getRegsWrite()));
                             
                             // Continue accessing other details directly
-                            // System.out.println("Groups count: " + instruction.getDetails().getGroupsCount());
-                            // System.out.println("Groups: " + Arrays.toString(instruction.getDetails().getGroups()));
-                            // System.out.println("Writeback: " + instruction.getDetails().isWriteback());
+                            System.out.println("Groups count: " + instruction.getDetails().getGroupsCount());
+                            System.out.println("Groups: " + Arrays.toString(instruction.getDetails().getGroups()));
+                            System.out.println("Writeback: " + instruction.getDetails().isWriteback());
                             
                             // Use getRegAccess() for register operations
-                            // for(int regId : instruction.getRegAccess().getRegsRead()) {
-                            //     System.out.println("Reg read: " + handle.getRegName(regId));
-                            // }
-                            // for(int regId : instruction.getRegAccess().getRegsWrite()) {
-                            //     System.out.println("Reg write: " + handle.getRegName(regId));
-                            // }
-                            // System.out.println("Instruction name: " + handle.getInsnName(instruction.getId()));
-                            // for(int groupId : instruction.getDetails().getGroups()) {
-                            //     System.out.println("Group: " + handle.getGroupName(groupId));
-                            // }
+                            for(int regId : instruction.getRegAccess().getRegsRead()) {
+                                System.out.println("Reg read: " + handle.getRegName(regId));
+                            }
+                            for(int regId : instruction.getRegAccess().getRegsWrite()) {
+                                System.out.println("Reg write: " + handle.getRegName(regId));
+                            }
+                            System.out.println("Instruction name: " + handle.getInsnName(instruction.getId()));
+                            for(int groupId : instruction.getDetails().getGroups()) {
+                                System.out.println("Group: " + handle.getGroupName(groupId));
+                            }
                             System.out.println("Prefix: " + Arrays.toString(instruction.getDetails().getArchDetails().getPrefixs()));
                             System.out.println("Opcode: " + Arrays.toString(instruction.getDetails().getArchDetails().getOpcodes()));
                             System.out.println("Rex: " + instruction.getDetails().getArchDetails().getRex());
@@ -126,9 +126,6 @@ public class SimpleDisassembler {
                             System.out.println("\tDisp size: " + encoding.getDispSize());
                             System.out.println("\tImm offset: " + encoding.getImmOffset());
                             System.out.println("\tImm size: " + encoding.getImmSize());
-                            // for(int i = 0; i < instruction.getDetails().getArchDetails().getOpCount(); i++) {
-                            //     System.out.println("Operand " + i + ": " + instruction.getDetails().getArchDetails().getOperands()[i]);
-                            // }
                         }
                         offset += instruction.getSize();
                         runtimeAddress += instruction.getSize();
