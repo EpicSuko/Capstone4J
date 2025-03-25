@@ -12,6 +12,8 @@ abstract class CapstoneArchDetails<T> {
 
     abstract int getOpCounOfType(int opType);
     abstract boolean isOperandOfType(T operand, int opType);
+    abstract T[] getOperandsOfAccess(CapstoneAccessType accessType);
+    abstract int[] extractRegistersFromOperand(Object operand);
 
     int getOpIndex(int opType, int position) {
         if (position < 1 || position > getOpCounOfType(opType)) {
