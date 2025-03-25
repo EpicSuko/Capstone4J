@@ -1,5 +1,8 @@
 package com.capstone4j;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Contains detailed information about a disassembled instruction.
  * <p>
@@ -62,6 +65,117 @@ public class CapstoneInstructionDetails<A extends CapstoneArchDetails<?>> {
      */
     public CapstoneRegAccess getRegAccess() {
         return this.regAccess;
+    }
+
+    /**
+     * Returns comprehensive register access information for this instruction,
+     * including both implicit register access and operand-based register access.
+     * <p>
+     * Unlike {@link #getRegAccess()}, which only provides information about
+     * implicit register reads and writes, this method also includes registers
+     * used in operands that have READ, WRITE, or READ_WRITE access types.
+     * <p>
+     * This provides a more complete picture of all registers affected by
+     * the instruction's execution, which is essential for thorough data flow
+     * analysis and register dependency tracking.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // Get comprehensive register access info
+     * CapstoneInstructionDetails details = instruction.getDetails();
+     * if (details != null) {
+     *     CapstoneRegAccess fullRegAccess = details.getComprehensiveRegAccess();
+     *     System.out.println("All registers read: " + Arrays.toString(fullRegAccess.getRegsRead()));
+     *     System.out.println("All registers written: " + Arrays.toString(fullRegAccess.getRegsWrite()));
+     * }
+     * }</pre>
+     *
+     * @return a {@link CapstoneRegAccess} object containing comprehensive register access information
+     * @see CapstoneRegAccess
+     * @see #getRegAccess()
+     * @see CapstoneAccessType
+     */
+    public CapstoneRegAccess getComprehensiveRegAccess() {
+        // Get the basic register access information
+        CapstoneRegAccess basicRegAccess = this.regAccess;
+        
+        // Create sets to hold all unique register IDs
+        // Using sets to avoid duplicates
+        Set<Integer> allRegsRead = new HashSet<>();
+        Set<Integer> allRegsWrite = new HashSet<>();
+        
+        // Add the basic register access information
+        for (int reg : basicRegAccess.getRegsRead()) {
+            allRegsRead.add(reg);
+        }
+        
+        for (int reg : basicRegAccess.getRegsWrite()) {
+            allRegsWrite.add(reg);
+        }
+        
+        A archDetails = this.archDetails;
+        
+        // Get operands with different access types
+        Object[] readOperands = archDetails.getOperandsOfAccess(CapstoneAccessType.READ);
+        Object[] writeOperands = archDetails.getOperandsOfAccess(CapstoneAccessType.WRITE);
+        Object[] readWriteOperands = archDetails.getOperandsOfAccess(CapstoneAccessType.READ_WRITE);
+        
+        // Process READ operands
+        if (readOperands != null) {
+            for (Object operand : readOperands) {
+                int[] regsInOperand = archDetails.extractRegistersFromOperand(operand);
+                for (int reg : regsInOperand) {
+                    if (reg != 0) { // Assuming 0 might be an invalid/empty register ID
+                        allRegsRead.add(reg);
+                    }
+                }
+            }
+        }
+        
+        // Process WRITE operands
+        if (writeOperands != null) {
+            for (Object operand : writeOperands) {
+                int[] regsInOperand = archDetails.extractRegistersFromOperand(operand);
+                for (int reg : regsInOperand) {
+                    if (reg != 0) {
+                        allRegsWrite.add(reg);
+                    }
+                }
+            }
+        }
+        
+        // Process READ_WRITE operands (add to both read and write sets)
+        if (readWriteOperands != null) {
+            for (Object operand : readWriteOperands) {
+                int[] regsInOperand = archDetails.extractRegistersFromOperand(operand);
+                for (int reg : regsInOperand) {
+                    if (reg != 0) {
+                        allRegsRead.add(reg);
+                        allRegsWrite.add(reg);
+                    }
+                }
+            }
+        }
+        
+        // Convert sets back to arrays
+        int[] completeRegsRead = new int[allRegsRead.size()];
+        int[] completeRegsWrite = new int[allRegsWrite.size()];
+        
+        int index = 0;
+        for (Integer reg : allRegsRead) {
+            completeRegsRead[index++] = reg;
+        }
+        
+        index = 0;
+        for (Integer reg : allRegsWrite) {
+            completeRegsWrite[index++] = reg;
+        }
+        
+        // Create a new CapstoneRegAccess with the complete information
+        return new CapstoneRegAccess(
+            completeRegsRead, completeRegsRead.length,
+            completeRegsWrite, completeRegsWrite.length
+        );
     }
 
     /**
