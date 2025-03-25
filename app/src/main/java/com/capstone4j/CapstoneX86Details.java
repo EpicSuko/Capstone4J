@@ -364,6 +364,9 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
                 if(mem.getIndex() != null) {
                     registers.add(mem.getIndex().getValue());
                 }
+                if(mem.getSegment() != null) {
+                    registers.add(mem.getSegment().getValue());
+                }
                 break;
             default:
                 break;
