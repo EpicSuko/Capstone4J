@@ -8,7 +8,10 @@ import com.capstone4j.internal.cs_x86_encoding;
 import static com.capstone4j.internal.capstone_h.*;
 
 import java.lang.foreign.MemorySegment;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Provides x86-specific instruction details for the Capstone disassembly engine.
@@ -679,9 +682,14 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          * @return Array of flags present in the bitmap
          */
         public static X86EFlags[] fromValue(long value) {
-            return Arrays.stream(X86EFlags.values())
-                .filter(flag -> (flag.getValue() & value) != 0)
-                .toArray(X86EFlags[]::new);
+            List<X86EFlags> result = new ArrayList<>();
+            BigInteger bigValue = BigInteger.valueOf(value); // because of the ulong we were getting a different value in the resulting array 
+            for(X86EFlags flag : X86EFlags.values()) {
+                if(bigValue.testBit(flag.ordinal())) {
+                    result.add(flag);
+                }
+            }
+            return result.toArray(new X86EFlags[0]);
         }
 
         /**
