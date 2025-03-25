@@ -264,7 +264,7 @@ class FormatStringParser {
                                 flags |= FormatFlags.PRINT_F_UNSIGNED.getValue();
                                 Object value;
                                 if(cflags == null) {
-                                    throw new IllegalArgumentException("Cflag is null");
+                                    cflags = FormatConv.PRINT_C_INT;
                                 }
                                 switch(cflags) {
                                     case PRINT_C_CHAR:
@@ -291,6 +291,11 @@ class FormatStringParser {
                                         Object[] doubleResult = va_arg(ap, C_LONG_DOUBLE);
                                         ap = (MemorySegment) doubleResult[1];
                                         value = (Double) doubleResult[0];
+                                        break;
+                                    case PRINT_C_INT:
+                                        Object[] intResult = va_arg(ap, C_INT);
+                                        ap = (MemorySegment) intResult[1];
+                                        value = Integer.toUnsignedLong((Integer) intResult[0]);
                                         break;
                                     default:
                                         throw new IllegalArgumentException("Unsupported cflag: " + cflags);
@@ -448,7 +453,8 @@ class FormatStringParser {
         PRINT_C_LONG_DOUBLE,
         PRINT_C_SIZE,
         PRINT_C_PTRDIFF,
-        PRINT_C_INTMAX;
+        PRINT_C_INTMAX,
+        PRINT_C_INT;
     }
 
     /**
