@@ -273,7 +273,7 @@ public class CapstoneHandle implements AutoCloseable {
      * @see CapstoneArchDetails
      * @see CapstoneOption#DETAIL
      */
-    public <A extends CapstoneArchDetails<?>> CapstoneInstruction<A> disassembleInstruction(byte[] code, long address) {
+    public <A extends CapstoneArchDetails<?> & MemorySegmentCreatable<A>> CapstoneInstruction<A> disassembleInstruction(byte[] code, long address) {
         if(this.handle == null) {
             throw new RuntimeException("Capstone handle is not initialized");
         }

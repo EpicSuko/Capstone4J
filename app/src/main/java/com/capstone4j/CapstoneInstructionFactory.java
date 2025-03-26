@@ -11,7 +11,7 @@ import java.lang.foreign.ValueLayout;
 
 class CapstoneInstructionFactory {
 
-    public static <A extends CapstoneArchDetails<?>> CapstoneInstruction<A> createFromMemorySegment(MemorySegment handle, MemorySegment instructionSegment, CapstoneArch arch, boolean parseDetails) {
+    public static <A extends CapstoneArchDetails<?> & MemorySegmentCreatable<A>> CapstoneInstruction<A> createFromMemorySegment(MemorySegment handle, MemorySegment instructionSegment, CapstoneArch arch, boolean parseDetails) {
 
         int size = cs_insn.size(instructionSegment);
 
@@ -42,7 +42,7 @@ class CapstoneInstructionFactory {
         );
     }
 
-    private static <A extends CapstoneArchDetails<?>> CapstoneInstructionDetails<A> parseInstructionDetails(MemorySegment handle, MemorySegment instructionSegment, MemorySegment detailsSegment, CapstoneArch arch) {
+    private static <A extends CapstoneArchDetails<?> & MemorySegmentCreatable<? extends CapstoneArchDetails<?>>> CapstoneInstructionDetails<A> parseInstructionDetails(MemorySegment handle, MemorySegment instructionSegment, MemorySegment detailsSegment, CapstoneArch arch) {
         int[] regsRead;
         int[] regsWrite;
         int regsReadCount;

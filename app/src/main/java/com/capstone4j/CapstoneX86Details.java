@@ -21,7 +21,7 @@ import java.util.List;
  * prefixes, operands, register details, flags affected, and encoding information.
  * </p>
  */
-public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X86Operand> {
+public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X86Operand> implements MemorySegmentCreatable<CapstoneX86Details> {
 
     /** Instruction prefixes (up to 4) */
     private final X86Prefix[] prefix;

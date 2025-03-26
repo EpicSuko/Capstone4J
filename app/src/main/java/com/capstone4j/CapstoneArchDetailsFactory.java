@@ -1,6 +1,7 @@
 package com.capstone4j;
 
 import java.lang.foreign.MemorySegment;
+import java.lang.reflect.Method;
 
 class CapstoneArchDetailsFactory {
 
@@ -9,21 +10,12 @@ class CapstoneArchDetailsFactory {
     }
     
     @SuppressWarnings("unchecked")
-    static <A extends CapstoneArchDetails<?>> A createDetails(MemorySegment segment, CapstoneArch arch, Class<A> expectedType) {
-        CapstoneArchDetails<?> result;
-        
-        switch(arch) {
-            case X86:
-                if (!CapstoneX86Details.class.isAssignableFrom(expectedType)) {
-                    throw new ClassCastException("Expected type " + expectedType.getSimpleName() + 
-                                                " is not compatible with X86 architecture");
-                }
-                result = createX86Details(segment);
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported architecture: " + arch);
+    static <T extends CapstoneArchDetails<?>> T createDetails(MemorySegment segment, CapstoneArch arch, Class<? extends CapstoneArchDetails<?>> expectedType) {
+        try {
+            Method createFromMemorySegment = expectedType.getDeclaredMethod("createFromMemorySegment", MemorySegment.class);
+            return (T) createFromMemorySegment.invoke(null, segment);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to create architecture details for " + arch, e);
         }
-        
-        return (A) result;
     }
 }
