@@ -635,44 +635,4 @@ public class CapstoneInstruction<A extends CapstoneArchDetails<?>> {
         }
         return this.details.getRegAccess();
     }
-
-    /**
-     * Returns comprehensive register access information for this instruction,
-     * including both implicit register access and operand-based register access.
-     * <p>
-     * Unlike {@link #getRegAccess()}, which only provides information about
-     * implicit register reads and writes, this method also includes registers
-     * used in operands that have READ, WRITE, or READ_WRITE access types.
-     * <p>
-     * This provides a more complete picture of all registers affected by
-     * the instruction's execution, which is essential for thorough data flow
-     * analysis and register dependency tracking.
-     * <p>
-     * Example usage:
-     * <pre>{@code
-     * // Get comprehensive register access info
-     * CapstoneRegAccess fullRegAccess = instruction.getComprehensiveRegAccess();
-     * if (fullRegAccess != null) {
-     *     System.out.println("All registers read: " + Arrays.toString(fullRegAccess.getRegsRead()));
-     *     System.out.println("All registers written: " + Arrays.toString(fullRegAccess.getRegsWrite()));
-     * }
-     * }</pre>
-     * <p>
-     * Note that this method requires instruction details to be available, which means
-     * the {@link CapstoneOption#DETAIL} option must have been enabled when creating the
-     * Capstone handle.
-     *
-     * @return a {@link CapstoneRegAccess} object containing comprehensive register access information,
-     *         or {@code null} if instruction details are not available
-     * @see CapstoneRegAccess
-     * @see #getRegAccess()
-     * @see CapstoneAccessType
-     * @see CapstoneInstructionDetails#getComprehensiveRegAccess()
-     */
-    public CapstoneRegAccess getComprehensiveRegAccess() {
-        if (this.details == null) {
-            return null;
-        }
-        return this.details.getComprehensiveRegAccess();
-    }
 }

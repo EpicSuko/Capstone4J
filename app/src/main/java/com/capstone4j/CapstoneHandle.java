@@ -300,7 +300,7 @@ public class CapstoneHandle implements AutoCloseable {
             CapstoneInstruction<A> instruction = null;
 
             if(result) {
-                instruction = CapstoneInstructionFactory.createFromMemorySegment(insn, this.arch, this.parseDetails);
+                instruction = CapstoneInstructionFactory.createFromMemorySegment(this.handle, insn, this.arch, this.parseDetails);
             }
             
             cs_free(insn, 1);
