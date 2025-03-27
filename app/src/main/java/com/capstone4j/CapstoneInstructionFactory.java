@@ -8,6 +8,7 @@ import com.capstone4j.internal.cs_insn;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
+import java.lang.reflect.Method;
 
 class CapstoneInstructionFactory {
 
@@ -100,9 +101,19 @@ class CapstoneInstructionFactory {
                 throw new IllegalArgumentException("Unsupported architecture: " + arch);
         }
         
-        A archDetails = CapstoneArchDetailsFactory.createDetails(archDetailsSegment, arch, archDetailsClass);
+        A archDetails = createDetails(archDetailsSegment, arch, archDetailsClass);
 
         return new CapstoneInstructionDetails<>(regsRead, regsReadCount, regsWrite, regsWriteCount, groups, groupsCount, writeback, archDetails);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T extends CapstoneArchDetails<?>> T createDetails(MemorySegment segment, CapstoneArch arch, Class<? extends CapstoneArchDetails<?>> expectedType) {
+        try {
+            Method createFromMemorySegment = expectedType.getDeclaredMethod("createFromMemorySegment", MemorySegment.class);
+            return (T) createFromMemorySegment.invoke(null, segment);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to create architecture details for " + arch, e);
+        }
     }
 
 }
