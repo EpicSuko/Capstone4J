@@ -214,8 +214,7 @@ class FormatStringParser {
                                 flags |= FormatFlags.PRINT_F_UNSIGNED.getValue();
                                 Object xvalue;
                                 if(cflags == null) {
-                                    System.out.println("Format: " + formatString);
-                                    throw new IllegalArgumentException("Cflag is null");
+                                    cflags = FormatConv.PRINT_C_INT;
                                 }
                                 switch(cflags) {
                                     case PRINT_C_CHAR:
@@ -240,6 +239,11 @@ class FormatStringParser {
                                         break;
                                     case PRINT_C_LONG_DOUBLE:
                                         throw new IllegalArgumentException("Hexadecimal format not supported for double");
+                                    case PRINT_C_INT:
+                                        Object[] intResult = va_arg(ap, C_INT);
+                                        ap = (MemorySegment) intResult[1];
+                                        xvalue = Integer.toUnsignedLong((Integer) intResult[0]);
+                                        break;
                                     default:
                                         throw new IllegalArgumentException("Unsupported cflag: " + cflags);
                                 }
