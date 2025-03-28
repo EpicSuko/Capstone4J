@@ -1,9 +1,12 @@
 package com.capstone4j;
 
 import static com.capstone4j.internal.capstone_h.*;
+import static java.lang.foreign.ValueLayout.ADDRESS;
 
+import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
+import java.util.Arrays;
 
 /**
  * A utility class for parsing C-style format strings and formatting values.
@@ -211,6 +214,7 @@ class FormatStringParser {
                                 flags |= FormatFlags.PRINT_F_UNSIGNED.getValue();
                                 Object xvalue;
                                 if(cflags == null) {
+                                    System.out.println("Format: " + formatString);
                                     throw new IllegalArgumentException("Cflag is null");
                                 }
                                 switch(cflags) {
@@ -315,10 +319,17 @@ class FormatStringParser {
                                     str.set(ValueLayout.JAVA_BYTE, len++, (byte) uformatted.charAt(i));
                                 }
                                 break;
+                            case 's':
+                                Object[] stringResult = va_arg(ap, C_POINTER);
+                                ap = (MemorySegment) stringResult[1];
+                                MemorySegment stringValue = (MemorySegment) stringResult[0];
+                                len = writeString(str, size, len, stringValue, width, precision, flags);
+                                break;
                             default:
                                 throw new IllegalArgumentException("Unsupported conversion specifier: " + formatChars[formatIndex]);
                         }
 
+                        state = FormatReadState.PRINT_S_DEFAULT;
                         formatIndex++;
                         cflags = null;
                         flags = 0;
@@ -340,6 +351,56 @@ class FormatStringParser {
             return -1;
         }
         
+        return len;
+    }
+
+    private static int writeString(MemorySegment str, long size, int len, MemorySegment stringValue, int width, int precision, int flags) {
+        int padlen = 0;
+        int strlen = 0;
+        boolean noprecision = precision == -1;
+        int offset = 0;
+
+        try(Arena arena = Arena.ofConfined()) {
+            if(stringValue == null || stringValue.equals(MemorySegment.NULL)) {
+                stringValue = arena.allocateUtf8String("(null)");
+            }
+    
+            for(strlen = 0; (noprecision || strlen < precision) && (byte)stringValue.get(C_CHAR, strlen) != 0; strlen++) {
+                continue;
+            }
+    
+            if((padlen = width - strlen) < 0) {
+                padlen = 0;
+            }
+            if((flags & FormatFlags.PRINT_F_MINUS.getValue()) != 0) {
+                padlen = -padlen;
+            }
+    
+            while (padlen > 0) {
+                if(len + 1 < size) {
+                    str.set(C_CHAR, len, (byte) ' ');
+                }
+                len++;
+                padlen--;
+            }
+    
+            while((noprecision || precision-- > 0) && (byte)stringValue.get(C_CHAR, offset) != 0) {
+                if(len + 1 < size) {
+                    str.set(C_CHAR, len, (byte)stringValue.get(C_CHAR, offset));
+                }
+                len++;
+                offset++;
+            }
+    
+            while(padlen < 0) {
+                if(len + 1 < size) {
+                    str.set(C_CHAR, len, (byte) ' ');
+                }
+                len++;
+                padlen++;
+            }
+        }
+
         return len;
     }
 
@@ -415,6 +476,8 @@ class FormatStringParser {
             value = ap.get(ValueLayout.JAVA_SHORT, 0);
         } else if(layout == ValueLayout.JAVA_CHAR) {
             value = ap.get(ValueLayout.JAVA_CHAR, 0);
+        } else if(layout == C_POINTER) {
+            value = ap.get(C_POINTER, 0);
         } else {
             throw new IllegalArgumentException("Unsupported value layout: " + layout);
         }
