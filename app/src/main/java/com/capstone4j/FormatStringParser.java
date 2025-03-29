@@ -1,7 +1,6 @@
 package com.capstone4j;
 
 import static com.capstone4j.internal.capstone_h.*;
-import static java.lang.foreign.ValueLayout.ADDRESS;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
