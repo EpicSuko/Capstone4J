@@ -130,12 +130,11 @@ public enum CapstoneMode {
         return value;
     }
 
-    // public static CapstoneMode fromValue(int value) {
-    //     for (CapstoneMode mode : CapstoneMode.values()) {
-    //         if (mode.getValue() == value) {
-    //             return mode;
-    //         }
-    //     }
-    //     throw new IllegalArgumentException("Invalid Capstone mode value: " + value);
-    // }
+	public static int toValue(CapstoneMode[] modes) {
+		int value = 0;
+		for (CapstoneMode mode : modes) {
+			value |= mode.getValue();
+		}
+		return value;
+	}
 }

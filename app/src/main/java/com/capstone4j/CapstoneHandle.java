@@ -14,7 +14,7 @@ public class CapstoneHandle implements AutoCloseable {
     private MemorySegment handle;
 
     private final CapstoneArch arch;
-    private final CapstoneMode mode;
+    private final CapstoneMode[] modes;
 
     private CapstoneMemoryProvider memoryProvider;
 
@@ -46,13 +46,13 @@ public class CapstoneHandle implements AutoCloseable {
      *     .useHandleArena(true)
      *     .build();
      * 
-     * CapstoneHandle handle = new CapstoneHandle(CapstoneArch.X86, CapstoneMode.X86_64, options);
+     * CapstoneHandle handle = new CapstoneHandle(CapstoneArch.X86, new CapstoneMode[] {CapstoneMode.X86_64}, options);
      * }</pre>
      * <p>
      * For default options, use {@link CapstoneHandleOptions#getDefault()}.
      *
      * @param arch the architecture to use for disassembly (e.g., {@link CapstoneArch#X86}, {@link CapstoneArch#ARM})
-     * @param mode the mode to use for disassembly (e.g., {@link CapstoneMode#X86_64}, {@link CapstoneMode#ARM})
+     * @param modes the modes to use for disassembly (e.g., {@link CapstoneMode#X86_64}, {@link CapstoneMode#ARM})
      * @param options the options for configuring the Capstone handle
      * @throws RuntimeException if the Capstone handle could not be created due to initialization errors
      * @throws NullPointerException if any of the parameters is null
@@ -60,9 +60,9 @@ public class CapstoneHandle implements AutoCloseable {
      * @see CapstoneArch
      * @see CapstoneMode
      */
-    CapstoneHandle(CapstoneArch arch, CapstoneMode mode, CapstoneHandleOptions options) {
+    CapstoneHandle(CapstoneArch arch, CapstoneMode[] modes, CapstoneHandleOptions options) {
         this.arch = arch;
-        this.mode = mode;
+        this.modes = modes;
         this.handleArena = options.getHandleArena();
         this.closeHandleArena = options.isCloseHandleArena();   
         this.memoryProvider = options.getMemoryProvider();
@@ -77,7 +77,7 @@ public class CapstoneHandle implements AutoCloseable {
             }
         }
 
-        CapstoneError err = CapstoneError.fromValue(cs_open(this.arch.getValue(), this.mode.getValue(), handle));
+        CapstoneError err = CapstoneError.fromValue(cs_open(this.arch.getValue(), CapstoneMode.toValue(this.modes), handle));
         if(err != CapstoneError.OK) {
             throw new RuntimeException("Failed to create Capstone handle: " + CapstoneUtils.getErrorMessage(err));
         }
@@ -89,11 +89,11 @@ public class CapstoneHandle implements AutoCloseable {
      * This constructor uses the default options ({@link CapstoneHandleOptions#getDefault()}).
      *
      * @param arch the architecture to use for disassembly
-     * @param mode the mode to use for disassembly
+     * @param modes the modes to use for disassembly
      * @throws RuntimeException if the Capstone handle could not be created
      */
-    CapstoneHandle(CapstoneArch arch, CapstoneMode mode) {
-        this(arch, mode, CapstoneHandleOptions.getDefault());
+    CapstoneHandle(CapstoneArch arch, CapstoneMode[] modes) {
+        this(arch, modes, CapstoneHandleOptions.getDefault());
     }
     
     /**

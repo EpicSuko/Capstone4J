@@ -86,7 +86,7 @@ public class Capstone {
         if(!isInitialized()) {
             throw new IllegalStateException("Capstone is not initialized");
         }
-        return new CapstoneHandle(arch, mode, options);
+        return createHandle(arch, new CapstoneMode[] {mode}, options);
     }
 
     /**
@@ -101,6 +101,38 @@ public class Capstone {
         if(!isInitialized()) {
             throw new IllegalStateException("Capstone is not initialized");
         }
-        return new CapstoneHandle(arch, mode);
+        return createHandle(arch, new CapstoneMode[] {mode});
     }
+
+    /**
+     * Creates a new Capstone handle for disassembling code with multiple modes and specified options.
+     * 
+     * @param arch The architecture to use for disassembly
+     * @param modes An array of modes to use for disassembly
+     * @param options The options to configure the handle
+     * @return A new Capstone handle
+     * @throws IllegalStateException if the Capstone library is not initialized
+     */
+    public static CapstoneHandle createHandle(CapstoneArch arch, CapstoneMode[] modes, CapstoneHandleOptions options) {
+        if(!isInitialized()) {
+            throw new IllegalStateException("Capstone is not initialized");
+        }
+        return new CapstoneHandle(arch, modes, options);
+    }
+
+    /**
+     * Creates a new Capstone handle for disassembling code with multiple modes and default options.
+     * 
+     * @param arch The architecture to use for disassembly
+     * @param modes An array of modes to use for disassembly
+     * @return A new Capstone handle
+     * @throws IllegalStateException if the Capstone library is not initialized
+     */
+    public static CapstoneHandle createHandle(CapstoneArch arch, CapstoneMode[] modes) {
+        if(!isInitialized()) {
+            throw new IllegalStateException("Capstone is not initialized");
+        }
+        return new CapstoneHandle(arch, modes);
+    }
+    
 }
