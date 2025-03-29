@@ -210,6 +210,51 @@ class FormatStringParser {
                         break;
                     case PRINT_S_CONV:
                         switch(formatChars[formatIndex]) {
+                            case 'd': case 'i':
+                                Object divalue;
+                                if(cflags == null) {
+                                    cflags = FormatConv.PRINT_C_INT;
+                                }
+                                switch(cflags) {
+                                    case PRINT_C_CHAR:
+                                        Object[] charResult = va_arg(ap, C_CHAR);
+                                        ap = (MemorySegment) charResult[1];
+                                        divalue = (byte)charResult[0];
+                                        break;
+                                    case PRINT_C_SHORT:
+                                        Object[] shortResult = va_arg(ap, C_SHORT);
+                                        ap = (MemorySegment) shortResult[1];
+                                        divalue = (short)shortResult[0];
+                                        break;
+                                    case PRINT_C_LONG:
+                                        Object[] longResult = va_arg(ap, C_LONG);
+                                        ap = (MemorySegment) longResult[1];
+                                        divalue = (int)longResult[0];
+                                        break;
+                                    case PRINT_C_LONG_LONG:
+                                        Object[] longLongResult = va_arg(ap, C_LONG_LONG);
+                                        ap = (MemorySegment) longLongResult[1];
+                                        divalue = (long)longLongResult[0];
+                                        break;
+                                    case PRINT_C_LONG_DOUBLE:
+                                        Object[] longDoubleResult = va_arg(ap, C_LONG_DOUBLE);
+                                        ap = (MemorySegment) longDoubleResult[1];
+                                        divalue = (double)longDoubleResult[0];
+                                        break;
+                                    case PRINT_C_INT:
+                                        Object[] intResult = va_arg(ap, C_INT);
+                                        ap = (MemorySegment) intResult[1];
+                                        divalue = (int)intResult[0];
+                                        break;
+                                    default:
+                                        throw new IllegalArgumentException("Unsupported cflag: " + cflags);
+                                }
+                                String diJavaFormat = buildJavaFormat(cflags, flags, width, precision, formatChars[formatIndex], false);
+                                String diFormatted = String.format(diJavaFormat, divalue);
+                                for (int i = 0; i < diFormatted.length() && len < size - 1; i++) {
+                                    str.set(ValueLayout.JAVA_BYTE, len++, (byte) diFormatted.charAt(i));
+                                }
+                                break;
                             case 'x': case 'X':
                                 flags |= FormatFlags.PRINT_F_UNSIGNED.getValue();
                                 Object xvalue;
@@ -248,7 +293,7 @@ class FormatStringParser {
                                         throw new IllegalArgumentException("Unsupported cflag: " + cflags);
                                 }
 
-                                String javaFormat = buildJavaFormat(cflags, flags, width, precision, formatChars[formatIndex]);
+                                String javaFormat = buildJavaFormat(cflags, flags, width, precision, formatChars[formatIndex], true);
                                 
                                 String formatted;
                                 if (cflags == FormatConv.PRINT_C_LONG_LONG) {
@@ -309,7 +354,7 @@ class FormatStringParser {
                                         throw new IllegalArgumentException("Unsupported cflag: " + cflags);
                                 }
 
-                                String ujavaFormat = buildJavaFormat(cflags, flags, width, precision, formatChars[formatIndex]);
+                                String ujavaFormat = buildJavaFormat(cflags, flags, width, precision, formatChars[formatIndex], true);
                                 
                                 String uformatted;
                                 if (cflags == FormatConv.PRINT_C_LONG_LONG) {
@@ -330,6 +375,12 @@ class FormatStringParser {
                                 len = writeString(str, size, len, stringValue, width, precision, flags);
                                 break;
                             default:
+                                System.out.println("FormatString: " + formatString);
+                                System.out.println("FormatIndex: " + formatIndex);
+                                System.out.println("FormatChars: " + formatChars[formatIndex]);
+                                System.out.println("FormatCharsLength: " + formatChars.length);
+                                System.out.println("FormatStringLength: " + formatString.length());
+                                System.out.println("FormatChars: " + Arrays.toString(formatChars));
                                 throw new IllegalArgumentException("Unsupported conversion specifier: " + formatChars[formatIndex]);
                         }
 
@@ -411,7 +462,7 @@ class FormatStringParser {
     /**
      * Builds a Java format string based on the given conversion flags, flags, width, precision, and conversion specifier.
      */
-    private static String buildJavaFormat(FormatConv cflags, int flags, int width, int precision, char conv) {
+    private static String buildJavaFormat(FormatConv cflags, int flags, int width, int precision, char conv, boolean isSigned) {
         StringBuilder format = new StringBuilder("%");
         
         // Add flags
@@ -430,7 +481,7 @@ class FormatStringParser {
         // Handle special cases for Java format specifiers
         switch (conv) {
             case 'u': // unsigned decimal
-                if (cflags == FormatConv.PRINT_C_LONG_LONG) {
+                if (cflags == FormatConv.PRINT_C_LONG_LONG && isSigned) {
                     // For unsigned long long, we've already converted to string
                     return format.toString(); // Return as-is since we've already converted to string
                 }
