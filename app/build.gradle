@@ -10,6 +10,8 @@ plugins {
     id 'java-library'
     // Apply the maven-publish plugin to publish the library
     id 'maven-publish'
+
+    id 'eclipse'
 }
 
 repositories {
@@ -45,6 +47,11 @@ tasks.withType(Javadoc).configureEach {
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+eclipse.jdt.file.withProperties { props ->
+    props['org.eclipse.jdt.core.compiler.problem.enablePreviewFeatures']= 'enabled'
+    props['org.eclipse.jdt.core.compiler.problem.reportPreviewFeatures']= 'ignore'
 }
 
 // Configure publishing

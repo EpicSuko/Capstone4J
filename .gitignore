@@ -14,3 +14,7 @@ app/bin/*
 
 # Ignore hs_err_pid*.log files
 hs_err_pid*.log
+
+.classpath
+.project
+.settings/
