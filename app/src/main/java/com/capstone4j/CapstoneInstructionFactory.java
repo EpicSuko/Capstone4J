@@ -34,8 +34,8 @@ class CapstoneInstructionFactory {
             cs_insn.address(instructionSegment), 
             size, 
             bytes, 
-            cs_insn.mnemonic(instructionSegment).getUtf8String(0), 
-            cs_insn.op_str(instructionSegment).getUtf8String(0), 
+            cs_insn.mnemonic(instructionSegment).getString(0), 
+            cs_insn.op_str(instructionSegment).getString(0), 
             cs_insn.is_alias(instructionSegment), 
             cs_insn.usesAliasDetails(instructionSegment),
             details,
@@ -50,10 +50,10 @@ class CapstoneInstructionFactory {
         int regsWriteCount;
 
         try (Arena arena = Arena.ofConfined()) {
-            MemorySegment regsReadAccessSegment = arena.allocateArray(ValueLayout.JAVA_SHORT, 64);
-            MemorySegment regsWriteAccessSegment = arena.allocateArray(ValueLayout.JAVA_SHORT, 64);
-            MemorySegment regsReadAccessCountSegment = arena.allocate(ValueLayout.JAVA_BYTE, (byte)0);
-            MemorySegment regsWriteAccessCountSegment = arena.allocate(ValueLayout.JAVA_BYTE, (byte)0);
+            MemorySegment regsReadAccessSegment = arena.allocate(ValueLayout.JAVA_SHORT, 64);
+            MemorySegment regsWriteAccessSegment = arena.allocate(ValueLayout.JAVA_SHORT, 64);
+            MemorySegment regsReadAccessCountSegment = arena.allocateFrom(ValueLayout.JAVA_BYTE, (byte)0);
+            MemorySegment regsWriteAccessCountSegment = arena.allocateFrom(ValueLayout.JAVA_BYTE, (byte)0);
             
             CapstoneError res = CapstoneError.fromValue(cs_regs_access(handle.get(csh, 0), instructionSegment, regsReadAccessSegment, regsReadAccessCountSegment, regsWriteAccessSegment, regsWriteAccessCountSegment));
             // Check the result)
@@ -97,6 +97,12 @@ class CapstoneInstructionFactory {
                 archDetailsClass = x86Class;
                 archDetailsSegment = cs_detail.x86(detailsSegment);
                 break;
+            // case ARM:
+            //     @SuppressWarnings("unchecked")
+            //     Class<A> armClass = (Class<A>) CapstoneArmDetails.class;
+            //     archDetailsClass = armClass;
+            //     archDetailsSegment = cs_detail.arm(detailsSegment);
+            //     break;
             default:
                 throw new IllegalArgumentException("Unsupported architecture: " + arch);
         }
@@ -107,10 +113,10 @@ class CapstoneInstructionFactory {
     }
 
     @SuppressWarnings("unchecked")
-    static <T extends CapstoneArchDetails<?>> T createDetails(MemorySegment segment, CapstoneArch arch, Class<? extends CapstoneArchDetails<?>> expectedType) {
+    static <T extends CapstoneArchDetails<?>> T createDetails(MemorySegment archDetailsSegment, CapstoneArch arch, Class<? extends CapstoneArchDetails<?>> expectedType) {
         try {
             Method createFromMemorySegment = expectedType.getDeclaredMethod("createFromMemorySegment", MemorySegment.class);
-            return (T) createFromMemorySegment.invoke(null, segment);
+            return (T) createFromMemorySegment.invoke(null, archDetailsSegment);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to create architecture details for " + arch, e);
         }

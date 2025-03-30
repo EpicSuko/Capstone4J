@@ -28,7 +28,7 @@ dependencies {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(24)
     }
     withJavadocJar()
     withSourcesJar()
@@ -41,7 +41,7 @@ javadoc {
 // Configure javadoc to enable preview features
 tasks.withType(Javadoc).configureEach {
     options.addBooleanOption('-enable-preview', true)
-    options.addStringOption('-source', '21')
+    options.addStringOption('-source', '24')
 }
 
 tasks.named('test') {

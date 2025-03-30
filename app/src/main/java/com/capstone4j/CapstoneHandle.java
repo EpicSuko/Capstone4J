@@ -215,7 +215,7 @@ public class CapstoneHandle implements AutoCloseable {
             throw new RuntimeException("Capstone handle is not initialized");
         }
         MemorySegment errStr = cs_strerror(error.getValue());
-        return errStr.getUtf8String(0);
+        return errStr.getString(0);
     }
 
     /**
@@ -278,13 +278,11 @@ public class CapstoneHandle implements AutoCloseable {
             throw new RuntimeException("Capstone handle is not initialized");
         }
         try(Arena arena = Arena.ofConfined()) {
-            MemorySegment codeRef = arena.allocate(ValueLayout.ADDRESS);
-            MemorySegment codeSegment = arena.allocateArray(ValueLayout.JAVA_BYTE, code);
-            codeRef.set(ValueLayout.ADDRESS, 0, codeSegment);
+            MemorySegment codeRef = arena.allocateFrom(ValueLayout.ADDRESS, arena.allocateFrom(ValueLayout.JAVA_BYTE, code));
                 
-            MemorySegment sizeRef = arena.allocate(ValueLayout.JAVA_LONG, code.length);
+            MemorySegment sizeRef = arena.allocateFrom(ValueLayout.JAVA_LONG, code.length);
 
-            MemorySegment addressRef = arena.allocate(ValueLayout.JAVA_LONG, address);
+            MemorySegment addressRef = arena.allocateFrom(ValueLayout.JAVA_LONG, address);
             
             MemorySegment insn = cs_malloc(this.handle.get(csh, 0));
 
@@ -347,7 +345,7 @@ public class CapstoneHandle implements AutoCloseable {
         if(regName == null || regName.byteSize() == 0 || regName == MemorySegment.NULL) {
             throw new RuntimeException("Failed to get register name for id: " + regId);
         }
-        return regName.getUtf8String(0);
+        return regName.getString(0);
     }
 
     /**
@@ -384,7 +382,7 @@ public class CapstoneHandle implements AutoCloseable {
         if(insnName == null || insnName.byteSize() == 0 || insnName == MemorySegment.NULL) {
             throw new RuntimeException("Failed to get instruction name for id: " + insnId);
         }
-        return insnName.getUtf8String(0);
+        return insnName.getString(0);
     }
 
     /**
@@ -425,7 +423,7 @@ public class CapstoneHandle implements AutoCloseable {
         if(groupName == null || groupName.byteSize() == 0 || groupName == MemorySegment.NULL) {
             throw new RuntimeException("Failed to get group name for id: " + groupId);
         }
-        return groupName.getUtf8String(0);
+        return groupName.getString(0);
     }
 
     /**

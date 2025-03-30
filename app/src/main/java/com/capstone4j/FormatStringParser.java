@@ -416,7 +416,7 @@ class FormatStringParser {
 
         try(Arena arena = Arena.ofConfined()) {
             if(stringValue == null || stringValue.equals(MemorySegment.NULL)) {
-                stringValue = arena.allocateUtf8String("(null)");
+                stringValue = arena.allocateFrom("(null)");
             }
     
             for(strlen = 0; (noprecision || strlen < precision) && (byte)stringValue.get(C_CHAR, strlen) != 0; strlen++) {
