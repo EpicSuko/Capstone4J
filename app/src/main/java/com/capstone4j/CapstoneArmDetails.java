@@ -41,7 +41,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
         this.predMask = predMask;
     }
 
-    public static CapstoneArmDetails createFromMemorySegment(MemorySegment segment) {
+    static CapstoneArmDetails createFromMemorySegment(MemorySegment segment) {
         boolean usermode = cs_arm.usermode(segment);
         int vectorSize = cs_arm.vector_size(segment);
         ArmVectorDataType vectorDataType = ArmVectorDataType.fromValue(cs_arm.vector_data(segment));
