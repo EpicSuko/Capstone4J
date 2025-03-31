@@ -97,12 +97,12 @@ class CapstoneInstructionFactory {
                 archDetailsClass = x86Class;
                 archDetailsSegment = cs_detail.x86(detailsSegment);
                 break;
-            // case ARM:
-            //     @SuppressWarnings("unchecked")
-            //     Class<A> armClass = (Class<A>) CapstoneArmDetails.class;
-            //     archDetailsClass = armClass;
-            //     archDetailsSegment = cs_detail.arm(detailsSegment);
-            //     break;
+            case ARM:
+                @SuppressWarnings("unchecked")
+                Class<A> armClass = (Class<A>) CapstoneArmDetails.class;
+                archDetailsClass = armClass;
+                archDetailsSegment = cs_detail.arm(detailsSegment);
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported architecture: " + arch);
         }
