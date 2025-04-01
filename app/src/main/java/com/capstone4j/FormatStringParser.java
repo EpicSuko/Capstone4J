@@ -367,6 +367,15 @@ class FormatStringParser {
                                     str.set(ValueLayout.JAVA_BYTE, len++, (byte) uformatted.charAt(i));
                                 }
                                 break;
+                            case 'c':
+                                Object[] charResult = va_arg(ap, C_INT);
+                                ap = (MemorySegment) charResult[1];
+                                int charValue = (Integer) charResult[0];
+                                if(len + 1 < size) {
+                                    str.set(C_CHAR, len, (byte) charValue);
+                                }
+                                len++;
+                                break;
                             case 's':
                                 Object[] stringResult = va_arg(ap, C_POINTER);
                                 ap = (MemorySegment) stringResult[1];
@@ -512,32 +521,44 @@ class FormatStringParser {
      * Extracts the next argument from a va_list.
      */
     private static Object[] va_arg(MemorySegment ap, ValueLayout layout) {
+        // Calculate required alignment
+        long alignment = layout.byteAlignment();
+        
+        // Calculate current address
+        long address = ap.address();
+        
+        // Calculate padding needed for alignment
+        long padding = (alignment - (address % alignment)) % alignment;
+        
+        // Create aligned segment
+        MemorySegment alignedAp = ap.asSlice(padding);
+
         // Get the current address and read the value
         Object value;
         if (layout == ValueLayout.JAVA_INT) {
-            value = ap.get(ValueLayout.JAVA_INT, 0);
+            value = alignedAp.get(ValueLayout.JAVA_INT, 0);
         } else if (layout == ValueLayout.JAVA_LONG) {
-            value = ap.get(ValueLayout.JAVA_LONG, 0);
+            value = alignedAp.get(ValueLayout.JAVA_LONG, 0);
         } else if (layout == ValueLayout.JAVA_DOUBLE) {
-            value = ap.get(ValueLayout.JAVA_DOUBLE, 0);
+            value = alignedAp.get(ValueLayout.JAVA_DOUBLE, 0);
         } else if (layout == ValueLayout.JAVA_FLOAT) {
-            value = ap.get(ValueLayout.JAVA_FLOAT, 0);
+            value = alignedAp.get(ValueLayout.JAVA_FLOAT, 0);
         } else if (layout == ValueLayout.ADDRESS) {
-            value = ap.get(ValueLayout.ADDRESS, 0);
+            value = alignedAp.get(ValueLayout.ADDRESS, 0);
         } else if(layout == ValueLayout.JAVA_BYTE) {
-            value = ap.get(ValueLayout.JAVA_BYTE, 0);
+            value = alignedAp.get(ValueLayout.JAVA_BYTE, 0);
         } else if(layout == ValueLayout.JAVA_SHORT) {
-            value = ap.get(ValueLayout.JAVA_SHORT, 0);
+            value = alignedAp.get(ValueLayout.JAVA_SHORT, 0);
         } else if(layout == ValueLayout.JAVA_CHAR) {
-            value = ap.get(ValueLayout.JAVA_CHAR, 0);
+            value = alignedAp.get(ValueLayout.JAVA_CHAR, 0);
         } else if(layout == C_POINTER) {
-            value = ap.get(C_POINTER, 0);
+            value = alignedAp.get(C_POINTER, 0);
         } else {
             throw new IllegalArgumentException("Unsupported value layout: " + layout);
         }
         
         // Create the updated pointer
-        MemorySegment updatedAp = ap.asSlice(layout.byteSize());
+        MemorySegment updatedAp = ap.asSlice(padding + layout.byteSize());
         
         return new Object[] { value, updatedAp };
     }
