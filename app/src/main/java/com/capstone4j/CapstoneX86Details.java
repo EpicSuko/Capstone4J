@@ -498,7 +498,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          *
          * @param value The native prefix value
          */
-        X86Prefix(int value) {
+        private X86Prefix(int value) {
             this.value = value;
         }
 
@@ -662,7 +662,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          *
          * @param value The flag bit value
          */
-        X86EFlags(long value) {
+        private X86EFlags(long value) {
             this.value = value;
         }
 
@@ -762,7 +762,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          *
          * @param value The flag bit value
          */
-        X86FPUFlags(long value) {
+        private X86FPUFlags(long value) {
             this.value = value;
         }
 
@@ -1329,7 +1329,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          *
          * @param value The native register value
          */
-        X86Reg(int value) {
+        private X86Reg(int value) {
             this.value = value;
         }
 
@@ -1392,7 +1392,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          *
          * @param value The native condition code value
          */
-        X86XopCC(int value) {
+        private X86XopCC(int value) {
             this.value = value;
         }
 
@@ -1455,7 +1455,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          *
          * @param value The native condition code value
          */
-        X86SseCC(int value) {
+        private X86SseCC(int value) {
             this.value = value;
         }
 
@@ -1566,7 +1566,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          *
          * @param value The native condition code value
          */
-        X86AvxCC(int value) {
+        private X86AvxCC(int value) {
             this.value = value;
         }
 
@@ -1621,7 +1621,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          *
          * @param value The native rounding mode value
          */
-        X86AvxRm(int value) {
+        private X86AvxRm(int value) {
             this.value = value;
         }
 
@@ -1674,7 +1674,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          *
          * @param value The native operand type value
          */
-        X86OperandType(int value) {
+        private X86OperandType(int value) {
             this.value = value;
         }
 
@@ -1811,7 +1811,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          *
          * @param value The native broadcast type value
          */
-        X86AvxBcast(int value) {
+        private X86AvxBcast(int value) {
             this.value = value;
         }
 
@@ -2166,7 +2166,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
          *
          * @param value The native instruction group value
          */
-        X86InsnGroup(int value) {
+        private X86InsnGroup(int value) {
             this.value = value;
         }
 
@@ -3727,7 +3727,7 @@ public class CapstoneX86Details extends CapstoneArchDetails<CapstoneX86Details.X
 
         private final int value;
 
-        X86Insn(int value) {
+        private X86Insn(int value) {
             this.value = value;
         }
 
