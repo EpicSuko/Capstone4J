@@ -212,7 +212,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
     public static class ArmSupplyInfo {
         private final CapstoneAccessType memAcc;
 
-        public ArmSupplyInfo(CapstoneAccessType memAcc) {
+        ArmSupplyInfo(CapstoneAccessType memAcc) {
             this.memAcc = memAcc;
         }
 
@@ -241,7 +241,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmMemBOpt(int value) {
+        private ArmMemBOpt(int value) {
             this.value = value;
         }
 
@@ -266,7 +266,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmVPTCodes(int value) {
+        private ArmVPTCodes(int value) {
             this.value = value;
         }
 
@@ -305,7 +305,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmCondCodes(int value) {
+        private ArmCondCodes(int value) {
             this.value = value;
         }
 
@@ -332,7 +332,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmCpsFlagType(int value) {
+        private ArmCpsFlagType(int value) {
             this.value = value;
         }
 
@@ -357,7 +357,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmCpsModeType(int value) {
+        private ArmCpsModeType(int value) {
             this.value = value;
         }
 
@@ -441,7 +441,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmVectorDataType(int value) {
+        private ArmVectorDataType(int value) {
             this.value = value;
         }
 
@@ -477,7 +477,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmShifter(int value) {
+        private ArmShifter(int value) {
             this.value = value;
         }
 
@@ -533,7 +533,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmOperandType(int value) {
+        private ArmOperandType(int value) {
             this.value = value;
         }
 
@@ -608,7 +608,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmSysReg(int value) {
+        private ArmSysReg(int value) {
             this.value = value;
         }
 
@@ -663,7 +663,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmBankedReg(int value) {
+        private ArmBankedReg(int value) {
             this.value = value;
         }
 
@@ -719,7 +719,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmSpsrCsprBits(int value) {
+        private ArmSpsrCsprBits(int value) {
             this.value = value;
         }
 
@@ -1089,7 +1089,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmReg(int value) {
+        private ArmReg(int value) {
             this.value = value;
         }
 
@@ -1156,7 +1156,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmSetEndType(int value) {
+        private ArmSetEndType(int value) {
             this.value = value;
         }
 
@@ -1278,7 +1278,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private int value;
 
-        ArmPredBlockMask(int value) {
+        private ArmPredBlockMask(int value) {
             this.value = value;
         }
 
@@ -1380,7 +1380,7 @@ public class CapstoneArmDetails extends CapstoneArchDetails<CapstoneArmDetails.A
 
         private final int value;
 
-        ArmInsnGroup(int value) {
+        private ArmInsnGroup(int value) {
             this.value = value;
         }
 
