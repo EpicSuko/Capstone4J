@@ -3,16 +3,16 @@ package com.capstone.examples;
 import java.io.IOException;
 import java.util.Arrays;
 
-import com.capstone4j.Capstone;
-import com.capstone4j.CapstoneArch;
-import com.capstone4j.CapstoneHandleOptions;
-import com.capstone4j.CapstoneInstruction;
-import com.capstone4j.CapstoneMode;
-import com.capstone4j.CapstoneOption;
-import com.capstone4j.CapstoneOptionValue;
-import com.capstone4j.CapstoneX86Details;
-import com.capstone4j.CapstoneX86Details.X86Encoding;
-import com.capstone4j.CapstoneHandle;
+import com.suko.capstone4j.Capstone;
+import com.suko.capstone4j.CapstoneArch;
+import com.suko.capstone4j.CapstoneHandle;
+import com.suko.capstone4j.CapstoneHandleOptions;
+import com.suko.capstone4j.CapstoneInstruction;
+import com.suko.capstone4j.CapstoneMode;
+import com.suko.capstone4j.CapstoneOption;
+import com.suko.capstone4j.CapstoneOptionValue;
+import com.suko.capstone4j.CapstoneX86Details;
+import com.suko.capstone4j.CapstoneX86Details.X86Encoding;
 
 public class SimpleDisassembler {
 
