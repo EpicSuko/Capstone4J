@@ -103,6 +103,12 @@ class CapstoneInstructionFactory {
                 archDetailsClass = armClass;
                 archDetailsSegment = cs_detail.arm(detailsSegment);
                 break;
+            case AARCH64:
+                @SuppressWarnings("unchecked")
+                Class<A> aarch64Class = (Class<A>) CapstoneAArch64Details.class;
+                archDetailsClass = aarch64Class;
+                archDetailsSegment = cs_detail.aarch64(detailsSegment);
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported architecture: " + arch);
         }
