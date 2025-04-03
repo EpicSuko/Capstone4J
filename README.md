@@ -189,10 +189,6 @@ The project uses the following configurations:
   - [ ] Linux
   - [ ] macOS
 
-## License
-
-This project is licensed under the BSD 3-Clause License - see the LICENSE file for details. This is the same license as the original Capstone project.
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
@@ -201,4 +197,21 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request 
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the BSD 3-Clause License - see the LICENSE file for details. This is the same license as the original Capstone project.
+
+The BSD 3-Clause License is a permissive open source license that allows you to:
+- Use the code commercially
+- Modify the code
+- Distribute the code
+- Use it privately
+- Sublicense the code
+
+The only requirements are:
+- Include the original copyright notice
+- Include the license text
+- Include the list of conditions
+- Include the following disclaimer: "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED." 
