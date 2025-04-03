@@ -44,14 +44,14 @@ gradlew.bat build
 ## Usage Example
 
 ```java
-import com.capstone4j.Capstone;
-import com.capstone4j.CapstoneHandle;
-import com.capstone4j.CapstoneHandleOptions;
-import com.capstone4j.CapstoneInstruction;
-import com.capstone4j.CapstoneOption;
-import com.capstone4j.CapstoneOptionValue;
-import com.capstone4j.CapstoneX86Details;
-import com.capstone4j.CapstoneX86Details.X86Encoding;
+import com.suko.capstone4j.Capstone;
+import com.suko.capstone4j.CapstoneHandle;
+import com.suko.capstone4j.CapstoneHandleOptions;
+import com.suko.capstone4j.CapstoneInstruction;
+import com.suko.capstone4j.CapstoneOption;
+import com.suko.capstone4j.CapstoneOptionValue;
+import com.suko.capstone4j.CapstoneX86Details;
+import com.suko.capstone4j.CapstoneX86Details.X86Encoding;
 
 public class Example {
     public static void main(String[] args) {
