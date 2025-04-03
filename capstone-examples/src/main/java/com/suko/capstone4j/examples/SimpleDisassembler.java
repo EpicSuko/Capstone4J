@@ -1,4 +1,4 @@
-package com.capstone.examples;
+package com.suko.capstone4j.examples;
 
 import java.io.IOException;
 import java.util.Arrays;

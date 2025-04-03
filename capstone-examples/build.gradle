@@ -12,7 +12,7 @@ dependencies {
 }
 
 application {
-    mainClassName = 'com.capstone.examples.SimpleDisassembler'
+    mainClassName = 'com.suko.capstone4j.examples.SimpleDisassembler'
 }
 
 // Configure source sets to recognize the correct directory structure
