@@ -1,4 +1,4 @@
-# Capstone4J
+# Capstone4J (v0.3.0)
 
 Capstone4J is a Java binding for the [Capstone](https://github.com/capstone-engine/capstone) disassembly framework. It provides a pure Java interface to the powerful Capstone engine, allowing Java applications to disassemble machine code across multiple architectures. Built using Java 24's Foreign Function & Memory API, it offers native performance while maintaining Java's safety and ease of use.
 
