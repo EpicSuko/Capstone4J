@@ -367,12 +367,12 @@ class FormatStringParser {
                                     str.set(ValueLayout.JAVA_BYTE, len++, (byte) uformatted.charAt(i));
                                 }
                                 break;
-                            case 'c':
+                            case 'c': // possible bug
                                 Object[] charResult = va_arg(ap, C_INT);
                                 ap = (MemorySegment) charResult[1];
-                                int charValue = (Integer) charResult[0];
+                                int charValue = (int) charResult[0];
                                 if(len + 1 < size) {
-                                    str.set(C_CHAR, len, (byte) charValue);
+                                    str.set(ValueLayout.JAVA_BYTE, len, (byte)charValue);
                                 }
                                 len++;
                                 break;
