@@ -58,15 +58,15 @@ eclipse.jdt.file.withProperties { props ->
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId = project.group
+            groupId = 'com.suko.capstone4j'
             artifactId = 'capstone-core'
-            version = project.version
+            version = '0.3.0'
             
             from components.java
             
             pom {
                 name = 'Capstone Java'
-                description = project.description
+                description = 'Java bindings for the Capstone disassembler'
             }
         }
     }
