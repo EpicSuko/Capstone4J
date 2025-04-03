@@ -3,6 +3,8 @@ package com.capstone4j;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
+import com.capstone4j.utils.NativeVsnprintf;
+
 /**
  * Interface for custom memory allocation in the Capstone engine.
  * <p>
@@ -85,18 +87,25 @@ public interface CapstoneMemoryProvider {
      * This method corresponds to the C {@code vsnprintf} function. It is used by Capstone
      * for formatting error messages and other output.
      * <p>
-     * This method has a default implementation that uses {@link FormatStringParser#vsnprintf}
-     * for format string parsing and value formatting. Implementations can override this method
-     * to provide custom formatting logic if needed.
+     * The method first attempts to use the native vsnprintf implementation if available through
+     * {@link NativeVsnprintf}. If the native implementation is not available, it falls back to
+     * using the Java-based {@link FormatStringParser#vsnprintf} implementation.
+     * <p>
+     * The buffer will not be written beyond its specified size, and the output will always be
+     * null-terminated if there is space available.
      *
      * @param str the buffer to write the formatted string to
      * @param size the size of the buffer in bytes
      * @param format the format string
      * @param ap the variable arguments pointer
      * @return the number of characters that would have been written if {@code size} had been
-     *         sufficiently large, not counting the terminating null character
+     *         sufficiently large, not counting the terminating null character. If an error occurs,
+     *         a negative value is returned.
      */
     default int vsnprintf(MemorySegment str, long size, MemorySegment format, MemorySegment ap) {
+        if(NativeVsnprintf.isAvailable()) {
+            return NativeVsnprintf.vsnprintf(str, size, format, ap);
+        }
         return FormatStringParser.vsnprintf(str, size, format, ap);
     }
 }
