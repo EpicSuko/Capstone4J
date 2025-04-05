@@ -18,8 +18,8 @@ Capstone is a lightweight multi-platform, multi-architecture disassembly framewo
 ## Features
 
 - Full support for multiple architectures:
-  - x86 (16/32/64-bit)
-  - ARM (32/64-bit)
+  - x86
+  - ARM
   - AArch64
 - Efficient memory management through Java's Foreign Memory API
 - Native interop using Foreign Function & Memory API

@@ -110,6 +110,55 @@ public class CapstoneInstruction<A extends CapstoneArchDetails<?>> {
     }
 
     /**
+     * Constructs a "bad instruction" instance representing an invalid or unreadable instruction.
+     * <p>
+     * This constructor creates a special instruction instance that represents a byte that could not
+     * be properly disassembled. This typically occurs when:
+     * <ul>
+     *   <li>The byte sequence does not form a valid instruction for the target architecture</li>
+     *   <li>The disassembly process encountered an error</li>
+     *   <li>The instruction is in a region of memory that should not be executed</li>
+     * </ul>
+     * <p>
+     * The resulting instruction will have:
+     * <ul>
+     *   <li>A mnemonic of "BAD"</li>
+     *   <li>An operand string showing the byte as a data byte (e.g., "db 55")</li>
+     *   <li>A size of 1 byte</li>
+     *   <li>No instruction details</li>
+     *   <li>An ID of -1</li>
+     * </ul>
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * // Create a bad instruction at address 0x1000 with byte 0x90
+     * CapstoneInstruction<CapstoneX86Details> badInsn = 
+     *     new CapstoneInstruction<>(0x1000, (byte)0x90, CapstoneArch.X86);
+     * 
+     * System.out.println(badInsn.getMnemonic()); // Prints "BAD"
+     * System.out.println(badInsn.getOpStr());    // Prints "db 90"
+     * System.out.println(badInsn.getSize());     // Prints 1
+     * }</pre>
+     *
+     * @param address the memory address where this invalid instruction is located
+     * @param badByte the byte that could not be disassembled
+     * @param arch the architecture for which this instruction was attempted to be disassembled
+     */
+    CapstoneInstruction(long address, byte badByte, CapstoneArch arch) {
+        this.id = -1;
+        this.aliasId = -1;
+        this.address = address;
+        this.size = 1;
+        this.bytes = new byte[] { badByte };
+        this.mnemonic = "BAD";
+        this.opStr = "db " + Long.toHexString(badByte & 0xFF);
+        this.isAlias = false;
+        this.usesAliasDetails = false;
+        this.details = null;
+        this.arch = arch;
+    }
+
+    /**
      * Returns the unique identifier of this instruction.
      * <p>
      * This ID is architecture-specific and corresponds to the internal Capstone ID for this instruction.

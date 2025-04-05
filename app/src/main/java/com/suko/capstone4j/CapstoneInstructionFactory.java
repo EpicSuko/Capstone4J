@@ -12,6 +12,10 @@ import com.suko.capstone4j.internal.cs_insn;
 
 class CapstoneInstructionFactory {
 
+    public static <A extends CapstoneArchDetails<?> & MemorySegmentCreatable<A>> CapstoneInstruction<A> createBadInstruction(long address, byte badByte, CapstoneArch arch) {
+        return new CapstoneInstruction<>(address, badByte, arch);
+    }
+
     public static <A extends CapstoneArchDetails<?> & MemorySegmentCreatable<A>> CapstoneInstruction<A> createFromMemorySegment(MemorySegment handle, MemorySegment instructionSegment, CapstoneArch arch, boolean parseDetails) {
 
         int size = cs_insn.size(instructionSegment);
